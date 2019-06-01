@@ -91,6 +91,8 @@ def renderTime(draw, width, height):
 
 try:
     DEPARTURE_STATION_CODE = os.environ["DEPARTURE_STATION_CODE"]
+    TRANSPORT_APP_ID = os.environ["TRANSPORT_APP_ID"]
+    TRANSPORT_API_KEY = os.environ["TRANSPORT_API_KEY"]
 
     device = get_device()
     font = make_font("Dot Matrix Regular.ttf", 14)
@@ -112,7 +114,8 @@ try:
     with canvas(device) as draw:
         w, h = draw.textsize(status, font)
 
-    departures = loadDeparturesForStation(DEPARTURE_STATION_CODE)
+    departures = loadDeparturesForStation(
+        DEPARTURE_STATION_CODE, TRANSPORT_APP_ID, TRANSPORT_API_KEY)
     firstDepartureDestinations = loadDestinationsForDepartre(
         departures[0]["service_timetable"]["id"])
 

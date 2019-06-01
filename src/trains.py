@@ -2,18 +2,19 @@ import os
 import requests
 
 
-def loadDeparturesForStation(stationCode):
-    TRANSPORT_APP_ID = os.environ["TRANSPORT_APP_ID"]
-    TRANSPORT_API_KEY = os.environ["TRANSPORT_API_KEY"]
+def loadDeparturesForStation(stationCode, appId, apiKey):
+    if stationCode == "":
+        raise ValueError(
+            "Please set the 'DEPARTURE_STATION_CODE' environment variable")
 
-    if TRANSPORT_APP_ID == "" or TRANSPORT_API_KEY == "":
+    if appId == "" or apiKey == "":
         raise ValueError(
             "Please set the 'TRANSPORT_APP_ID' and 'TRANSPORT_API_KEY' environment variables")
 
     URL = f"http://transportapi.com/v3/uk/train/station/{stationCode}/live.json"
 
-    PARAMS = {'app_id': TRANSPORT_APP_ID,
-              'app_key': TRANSPORT_API_KEY}
+    PARAMS = {'app_id': appId,
+              'app_key': apiKey}
 
     r = requests.get(url=URL, params=PARAMS)
 
