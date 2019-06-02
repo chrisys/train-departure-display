@@ -1,11 +1,14 @@
 import os
 import sys
 import time
+import threading
 
+from datetime import timedelta
+from timeloop import Timeloop
 from datetime import datetime
-from PIL import ImageFont
+from PIL import ImageFont, Image
 from helpers import get_device
-from trains import loadDeparturesForStation, loadDestinationsForDepartre
+from trains import loadDeparturesForStation, loadDestinationsForDeparture
 from luma.core.render import canvas
 from luma.core.virtual import viewport, snapshot
 
@@ -55,7 +58,7 @@ def renderStations(stations):
             station_render_count = 0
 
         draw.text(
-            (0, 0), text=stations[station_render_count:], font=font, fill="yellow")
+            (0, 0), text=stations[station_render_count:], width=width, font=font, fill="yellow")
 
         if station_render_count == 0 and pause_count < 8:
             pause_count += 1
@@ -83,10 +86,93 @@ def renderTime(draw, width, height):
 
     w1, h1 = draw.textsize("{}:{}".format(hour, minute), fontBoldLarge)
 
-    draw.text(((256 - 84) / 2, 0), text="{}:{}".format(hour, minute),
+    draw.text(((width - 84) / 2, 0), text="{}:{}".format(hour, minute),
               font=fontBoldLarge, fill="yellow")
-    draw.text((((256 - 84) / 2) + w1, 3), text=":{}".format(second),
+    draw.text((((width - 84) / 2) + w1, 3), text=":{}".format(second),
               font=fontBold, fill="yellow")
+
+
+def loadData():
+    departures = loadDeparturesForStation(
+        DEPARTURE_STATION_CODE, TRANSPORT_APP_ID, TRANSPORT_API_KEY)
+    firstDepartureDestinations = loadDestinationsForDeparture(
+        departures[0]["service_timetable"]["id"])
+
+    return departures, firstDepartureDestinations
+
+
+def startRefreshTimer(device, width, height):
+    tl = Timeloop()
+
+    @tl.job(interval=timedelta(seconds=0.2))
+    def screenRefresh():
+        global virtual
+        if virtual is not None:
+            virtual.refresh()
+
+    @tl.job(interval=timedelta(seconds=120))
+    def reloadDataAndRedraw():
+        global virtual
+        data = loadData()
+        virtual = drawSignage(device, width, height, data)
+        virtual.refresh()
+
+    reloadDataAndRedraw()
+
+    tl.start(block=True)
+
+
+def drawSignage(device, width, height, data):
+    global station_render_count, pause_count
+
+    device.clear()
+
+    virtualViewport = viewport(device, width=width, height=height)
+
+    status = "On time"
+    calling_at = "Calling at:"
+
+    departures, firstDepartureDestinations = data
+
+    with canvas(device) as draw:
+        w, h = draw.textsize(calling_at, font)
+
+    calling_width = w
+    width = virtualViewport.width
+
+    # First measure the text size
+    with canvas(device) as draw:
+        w, h = draw.textsize(status, font)
+
+    row_one_a = snapshot(
+        width - w, 16, renderDestination(departures[0]), interval=10)
+    row_one_b = snapshot(w, 16, renderServiceStatus(
+        departures[0]), interval=10)
+    row_two_a = snapshot(calling_width, 16, renderCallingAt, interval=100)
+    row_two_b = snapshot(width - calling_width, 16,
+                         renderStations(", ".join(firstDepartureDestinations)), interval=0.2)
+    row_three_a = snapshot(width - w, 16, renderDestination(
+        departures[1]), interval=10)
+    row_three_b = snapshot(w, 16, renderServiceStatus(
+        departures[1]), interval=10)
+    row_time = snapshot(width, 14, renderTime, interval=1)
+
+    if len(virtualViewport._hotspots) > 0:
+        for hotspot, xy in virtualViewport._hotspots:
+            virtualViewport.remove_hotspot(hotspot, xy)
+
+    station_render_count = 0
+    pause_count = 0
+
+    virtualViewport.add_hotspot(row_one_a, (0, 0))
+    virtualViewport.add_hotspot(row_one_b, (width - w, 0))
+    virtualViewport.add_hotspot(row_two_a, (0, 16))
+    virtualViewport.add_hotspot(row_two_b, (calling_width, 16))
+    virtualViewport.add_hotspot(row_three_a, (0, 32))
+    virtualViewport.add_hotspot(row_three_b, (width - w, 32))
+    virtualViewport.add_hotspot(row_time, (0, 50))
+
+    return virtualViewport
 
 
 try:
@@ -99,55 +185,17 @@ try:
     fontBold = make_font("Dot Matrix Bold.ttf", 16)
     fontBoldLarge = make_font("Dot Matrix Bold.ttf", 20)
 
+    # Global container for the virtual viewport
+    virtual = None
+
     station_render_count = 0
     pause_count = 0
-
-    status = "On time"
-    calling_at = "Calling at:"
-
-    with canvas(device) as draw:
-        w, h = draw.textsize(calling_at, font)
-
-    calling_width = w
-
-    # First measure the text size
-    with canvas(device) as draw:
-        w, h = draw.textsize(status, font)
-
-    departures = loadDeparturesForStation(
-        DEPARTURE_STATION_CODE, TRANSPORT_APP_ID, TRANSPORT_API_KEY)
-    firstDepartureDestinations = loadDestinationsForDepartre(
-        departures[0]["service_timetable"]["id"])
-
-    row_one_a = snapshot(
-        256 - w, 16, renderDestination(departures[0]), interval=10)
-    row_one_b = snapshot(w, 16, renderServiceStatus(
-        departures[0]), interval=10)
-    row_two_a = snapshot(calling_width, 16, renderCallingAt, interval=100)
-    row_two_b = snapshot(256 - calling_width, 16,
-                         renderStations(", ".join(firstDepartureDestinations)), interval=0.1)
-    # row_three = snapshot(256, 16, renderSWR, interval=10)
-    # row_three = snapshot(256, 16, renderServiceDetails, interval=10)
-    row_three_a = snapshot(256 - w, 16, renderDestination(
-        departures[1]), interval=10)
-    row_three_b = snapshot(w, 16, renderServiceStatus(
-        departures[1]), interval=10)
-    row_time = snapshot(256, 14, renderTime, interval=1)
 
     widget_width = 256
     widget_height = 64
 
-    virtual = viewport(device, width=256, height=widget_height)
-    virtual.add_hotspot(row_one_a, (0, 0))
-    virtual.add_hotspot(row_one_b, (256 - w, 0))
-    virtual.add_hotspot(row_two_a, (0, 16))
-    virtual.add_hotspot(row_two_b, (calling_width, 16))
-    virtual.add_hotspot(row_three_a, (0, 32))
-    virtual.add_hotspot(row_three_b, (256 - w, 32))
-    virtual.add_hotspot(row_time, (0, 50))
+    startRefreshTimer(device, width=widget_width, height=widget_height)
 
-    while True:
-        virtual.set_position((0, 0))
 
 except KeyboardInterrupt:
     pass
