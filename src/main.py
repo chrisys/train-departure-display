@@ -101,25 +101,27 @@ def loadData():
     return departures, firstDepartureDestinations
 
 
-def startRefreshTimer(device, width, height):
-    tl = Timeloop()
+# def startRefreshTimer(device, width, height):
+#     tl = Timeloop()
 
-    @tl.job(interval=timedelta(seconds=0.2))
-    def screenRefresh():
-        global virtual
-        if virtual is not None:
-            virtual.refresh()
+#     @tl.job(interval=timedelta(seconds=0.2))
+#     def screenRefresh():
+#         global virtual
+#         if virtual is not None:
+#             virtual.refresh()
 
-    @tl.job(interval=timedelta(seconds=120))
-    def reloadDataAndRedraw():
-        global virtual
-        data = loadData()
-        virtual = drawSignage(device, width, height, data)
-        virtual.refresh()
+#     @tl.job(interval=timedelta(seconds=5))
+#     def reloadDataAndRedraw():
+#         global virtual
+#         virtual = None
+#         time.sleep(0.2)
+#         data = loadData()
+#         virtual = drawSignage(device, width, height, data)
+#         virtual.refresh()
 
-    reloadDataAndRedraw()
+#     reloadDataAndRedraw()
 
-    tl.start(block=True)
+#     tl.start(block=True)
 
 
 def drawSignage(device, width, height, data):
@@ -185,16 +187,23 @@ try:
     fontBold = make_font("Dot Matrix Bold.ttf", 16)
     fontBoldLarge = make_font("Dot Matrix Bold.ttf", 20)
 
-    # Global container for the virtual viewport
-    virtual = None
-
-    station_render_count = 0
-    pause_count = 0
-
     widget_width = 256
     widget_height = 64
 
-    startRefreshTimer(device, width=widget_width, height=widget_height)
+    station_render_count = 0
+    pause_count = 0
+    loop_count = 0
+
+    while True:
+        if(loop_count % 200 == 0):
+            print("loadingData")
+            data = loadData()
+            virtual = drawSignage(device, width=widget_width,
+                                  height=widget_height, data=data)
+
+        loop_count = loop_count + 1
+
+        virtual.refresh()
 
 
 except KeyboardInterrupt:
