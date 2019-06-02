@@ -83,7 +83,7 @@ def renderTime(draw, width, height):
 
     w1, h1 = draw.textsize("{}:{}".format(hour, minute), fontBoldLarge)
 
-    draw.text(((256 - 85) / 2, 0), text="{}:{}".format(hour, minute),
+    draw.text(((256 - 84) / 2, 0), text="{}:{}".format(hour, minute),
               font=fontBoldLarge, fill="yellow")
     draw.text((((256 - 84) / 2) + w1, 3), text=":{}".format(second),
               font=fontBold, fill="yellow")
