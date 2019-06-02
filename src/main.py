@@ -153,7 +153,7 @@ def drawSignage(device, width, height, data):
         departures[1]), interval=10)
     row_three_b = snapshot(w, 16, renderServiceStatus(
         departures[1]), interval=10)
-    row_time = snapshot(width, 16, renderTime, interval=1)
+    row_time = snapshot(width, 14, renderTime, interval=1)
 
     if len(virtualViewport._hotspots) > 0:
         for hotspot, xy in virtualViewport._hotspots:
@@ -168,7 +168,7 @@ def drawSignage(device, width, height, data):
     virtualViewport.add_hotspot(row_two_b, (calling_width, 16))
     virtualViewport.add_hotspot(row_three_a, (0, 32))
     virtualViewport.add_hotspot(row_three_b, (width - w, 32))
-    virtualViewport.add_hotspot(row_time, (0, 48))
+    virtualViewport.add_hotspot(row_time, (0, 50))
 
     return virtualViewport
 
@@ -179,9 +179,9 @@ try:
     TRANSPORT_API_KEY = os.environ["TRANSPORT_API_KEY"]
 
     device = get_device()
-    font = make_font("Dot Matrix Regular.ttf", 14)
-    fontBold = make_font("Dot Matrix Bold.ttf", 14)
-    fontBoldLarge = make_font("Dot Matrix Bold.ttf", 18)
+    font = make_font("Dot Matrix Regular.ttf", 16)
+    fontBold = make_font("Dot Matrix Bold.ttf", 16)
+    fontBoldLarge = make_font("Dot Matrix Bold.ttf", 20)
 
     # Global container for the virtual viewport
     virtual = None
