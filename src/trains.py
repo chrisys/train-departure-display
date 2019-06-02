@@ -34,4 +34,4 @@ def loadDestinationsForDepartre(timetableUrl):
     if "error" in data:
         raise ValueError(data["error"])
 
-    return list(map(lambda x: x["station_name"], data["stops"]))
+    return list(map(lambda x: x["station_name"], data["stops"]))[1:]
