@@ -152,7 +152,7 @@ def drawSignage(device, width, height, data):
         departures[0]), interval=10)
     row_two_a = snapshot(calling_width, 16, renderCallingAt, interval=100)
     row_two_b = snapshot(width - calling_width, 16,
-                         renderStations(", ".join(firstDepartureDestinations)), interval=0.2)
+                         renderStations(", ".join(firstDepartureDestinations)), interval=0.1)
     row_three_a = snapshot(width - w, 16, renderDestination(
         departures[1]), interval=10)
     row_three_b = snapshot(w, 16, renderServiceStatus(
