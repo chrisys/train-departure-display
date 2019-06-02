@@ -97,7 +97,7 @@ try:
     device = get_device()
     font = make_font("Dot Matrix Regular.ttf", 16)
     fontBold = make_font("Dot Matrix Bold.ttf", 16)
-    fontBoldLarge = make_font("Dot Matrix Bold.ttf", 18)
+    fontBoldLarge = make_font("Dot Matrix Bold.ttf", 20)
 
     station_render_count = 0
     pause_count = 0
@@ -132,7 +132,7 @@ try:
         departures[1]), interval=10)
     row_three_b = snapshot(w, 16, renderServiceStatus(
         departures[1]), interval=10)
-    row_time = snapshot(256, 16, renderTime, interval=1)
+    row_time = snapshot(256, 14, renderTime, interval=1)
 
     widget_width = 256
     widget_height = 64
@@ -144,7 +144,7 @@ try:
     virtual.add_hotspot(row_two_b, (calling_width, 16))
     virtual.add_hotspot(row_three_a, (0, 32))
     virtual.add_hotspot(row_three_b, (256 - w, 32))
-    virtual.add_hotspot(row_time, (0, 48))
+    virtual.add_hotspot(row_time, (0, 50))
 
     while True:
         virtual.set_position((0, 0))
