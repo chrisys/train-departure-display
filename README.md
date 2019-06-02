@@ -27,6 +27,12 @@ $ DEPARTURE_STATION_CODE= TRANSPORT_APP_ID= TRANSPORT_API_KEY= python ./src/main
 
 Change the `--display` flag to alter the output mechanism (a list of options can be found in this README: https://github.com/rm-hull/luma.examples). Use `capture` to save to images, and `pygame` to run a visual emulator.
 
+Remember to pass `--interface spi` if you are using SPI to communicate with your screen. Otherwise, the default of `i2c` should suffice.
+
+```bash
+$ python ./src/main.py --display ssd1322 --width 256 --height 64 --interface spi
+```
+
 ## Thanks
 
 The fonts used were painstakingly put together by `DanielHartUK` and can be found on GitHub at https://github.com/DanielHartUK/Dot-Matrix-Typeface - A huge thanks for making that resource available!
