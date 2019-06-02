@@ -110,12 +110,14 @@ def startRefreshTimer(device, width, height):
         if virtual is not None:
             virtual.refresh()
 
-    @tl.job(interval=timedelta(seconds=5))
+    @tl.job(interval=timedelta(seconds=120))
     def reloadDataAndRedraw():
         global virtual
         data = loadData()
         virtual = drawSignage(device, width, height, data)
         virtual.refresh()
+
+    reloadDataAndRedraw()
 
     tl.start(block=True)
 
