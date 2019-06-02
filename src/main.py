@@ -83,7 +83,7 @@ def renderTime(draw, width, height):
 
     w1, h1 = draw.textsize("{}:{}".format(hour, minute), fontBoldLarge)
 
-    draw.text(((256 - 84) / 2, 0), text="{}:{}".format(hour, minute),
+    draw.text(((256 - 85) / 2, 0), text="{}:{}".format(hour, minute),
               font=fontBoldLarge, fill="yellow")
     draw.text((((256 - 84) / 2) + w1, 3), text=":{}".format(second),
               font=fontBold, fill="yellow")
@@ -95,8 +95,8 @@ try:
     TRANSPORT_API_KEY = os.environ["TRANSPORT_API_KEY"]
 
     device = get_device()
-    font = make_font("Dot Matrix Regular.ttf", 14)
-    fontBold = make_font("Dot Matrix Bold.ttf", 14)
+    font = make_font("Dot Matrix Regular.ttf", 16)
+    fontBold = make_font("Dot Matrix Bold.ttf", 16)
     fontBoldLarge = make_font("Dot Matrix Bold.ttf", 18)
 
     station_render_count = 0
