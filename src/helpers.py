@@ -56,8 +56,6 @@ def get_device(actual_args=None):
         config = cmdline.load_config(args.config)
         args = parser.parse_args(config + actual_args)
 
-    print(display_settings(args))
-
     # create device
     try:
         device = cmdline.create_device(args)

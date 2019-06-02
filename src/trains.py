@@ -26,7 +26,7 @@ def loadDeparturesForStation(stationCode, appId, apiKey):
     return data["departures"]["all"]
 
 
-def loadDestinationsForDepartre(timetableUrl):
+def loadDestinationsForDeparture(timetableUrl):
     r = requests.get(url=timetableUrl)
 
     data = r.json()
