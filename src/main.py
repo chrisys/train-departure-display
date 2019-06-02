@@ -194,15 +194,20 @@ try:
     pause_count = 0
     loop_count = 0
 
+    data = loadData()
+    virtual = drawSignage(device, width=widget_width,
+                          height=widget_height, data=data)
+    timeAtStart = time.time()
+    timeNow = time.time()
+
     while True:
-        if(loop_count % 200 == 0):
-            print("loadingData")
+        if(timeNow - timeAtStart >= 60):
             data = loadData()
             virtual = drawSignage(device, width=widget_width,
                                   height=widget_height, data=data)
+            timeAtStart = time.time()
 
-        loop_count = loop_count + 1
-
+        timeNow = time.time()
         virtual.refresh()
 
 
