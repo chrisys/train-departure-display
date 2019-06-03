@@ -1,0 +1,8 @@
+{
+  "departureStation": "",
+  "refreshTime": 120,
+  "transportApi": {
+    "appId": "",
+    "apiKey": ""
+  }
+}
