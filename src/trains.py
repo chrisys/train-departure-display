@@ -2,19 +2,22 @@ import os
 import requests
 
 
-def loadDeparturesForStation(stationCode, appId, apiKey):
-    if stationCode == "":
+def loadDeparturesForStation(journeyConfig, appId, apiKey):
+    if journeyConfig["departureStation"] == "":
         raise ValueError(
-            "Please set the 'DEPARTURE_STATION_CODE' environment variable")
+            "Please set the journey.departureStation property in config.json")
 
     if appId == "" or apiKey == "":
         raise ValueError(
-            "Please set the 'TRANSPORT_APP_ID' and 'TRANSPORT_API_KEY' environment variables")
+            "Please complete the transportApi section of your config.json file")
 
-    URL = f"http://transportapi.com/v3/uk/train/station/{stationCode}/live.json"
+    departureStation = journeyConfig["departureStation"]
+
+    URL = f"http://transportapi.com/v3/uk/train/station/{departureStation}/live.json"
 
     PARAMS = {'app_id': appId,
-              'app_key': apiKey}
+              'app_key': apiKey,
+              'calling_at': journeyConfig["destinationStation"]}
 
     r = requests.get(url=URL, params=PARAMS)
 
