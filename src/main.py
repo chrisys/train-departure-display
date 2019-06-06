@@ -182,7 +182,7 @@ try:
     timeNow = time.time()
 
     while True:
-        if(timeNow - timeAtStart >= 60):
+        if(timeNow - timeAtStart >= config["refreshTime"]):
             data = loadData(config["transportApi"], config["journey"])
             virtual = drawSignage(device, width=widgetWidth,
                                   height=widgetHeight, data=data)
