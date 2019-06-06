@@ -1,6 +1,6 @@
 # UK train departure screen
 
-> Python script to display replica real-time (coming soon) UK railway station departure screens for SSD13xx devices
+> Python script to display replica real-time UK railway station departure screens for SSD13xx devices
 
 ## Sample output
 
