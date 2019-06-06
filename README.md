@@ -18,10 +18,12 @@ $ pip install -r requirements.txt
 
 3. Sign up for the [Transport API](https://www.transportapi.com/), and generate an app ID and API key
 
-4. Run the script, providing your app ID and API key from step 3 as environment variables, along with a departure station code ([list](https://www.nationalrail.co.uk/stations_destinations/48541.aspx)):
+4. Copy `config.sample.json` to `config.json` and complete the values, including your Transport API keys from step 3. Note: station names should be provided as their three-letter station code, all available [here](https://www.nationalrail.co.uk/stations_destinations/48541.aspx).
+
+5. Start the app with:
 
 ```bash
-$ DEPARTURE_STATION_CODE= TRANSPORT_APP_ID= TRANSPORT_API_KEY= python ./src/main.py --display pygame --width 256 --height 64
+$ python ./src/main.py --display pygame --width 256 --height 64
 
 ```
 
