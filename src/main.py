@@ -239,6 +239,7 @@ try:
     else:
         virtual = drawSignage(device, width=widgetWidth,
                               height=widgetHeight, data=data)
+
     timeAtStart = time.time()
     timeNow = time.time()
 
@@ -251,7 +252,8 @@ try:
             else:
                 virtual = drawSignage(device, width=widgetWidth,
                                       height=widgetHeight, data=data)
-        timeAtStart = time.time()
+
+            timeAtStart = time.time()
 
         timeNow = time.time()
         virtual.refresh()
