@@ -193,10 +193,12 @@ def drawSignage(device, width, height, data):
     rowTwoA = snapshot(callingWidth, 16, renderCallingAt, interval=100)
     rowTwoB = snapshot(width - callingWidth, 16,
                        renderStations(", ".join(firstDepartureDestinations)), interval=0.1)
-    rowThreeA = snapshot(width - w, 16, renderDestination(
-        departures[1]), interval=10)
-    rowThreeB = snapshot(w, 16, renderServiceStatus(
-        departures[1]), interval=10)
+    if(len(departures) > 1):
+        rowThreeA = snapshot(width - w, 16, renderDestination(
+            departures[1]), interval=10)
+        rowThreeB = snapshot(w, 16, renderServiceStatus(
+            departures[1]), interval=10)
+
     rowTime = snapshot(width, 14, renderTime, interval=1)
 
     if len(virtualViewport._hotspots) > 0:
@@ -210,8 +212,10 @@ def drawSignage(device, width, height, data):
     virtualViewport.add_hotspot(rowOneB, (width - w, 0))
     virtualViewport.add_hotspot(rowTwoA, (0, 16))
     virtualViewport.add_hotspot(rowTwoB, (callingWidth, 16))
-    virtualViewport.add_hotspot(rowThreeA, (0, 32))
-    virtualViewport.add_hotspot(rowThreeB, (width - w, 32))
+    if(len(departures) > 1):
+        virtualViewport.add_hotspot(rowThreeA, (0, 32))
+        virtualViewport.add_hotspot(rowThreeB, (width - w, 32))
+
     virtualViewport.add_hotspot(rowTime, (0, 50))
 
     return virtualViewport
