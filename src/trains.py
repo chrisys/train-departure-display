@@ -26,7 +26,7 @@ def loadDeparturesForStation(journeyConfig, appId, apiKey):
     if "error" in data:
         raise ValueError(data["error"])
 
-    return data["departures"]["all"]
+    return data["departures"]["all"], data["station_name"]
 
 
 def loadDestinationsForDeparture(timetableUrl):
