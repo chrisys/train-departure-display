@@ -25,9 +25,9 @@ def loadDeparturesForStation(journeyConfig, appId, apiKey):
 
     for item in data["departures"]["all"]:
          item['origin_name'] = item['origin_name'].replace('International', 'Intl.')
-         item['origin_name'] = item['origin_name'].replace('London', 'LDN')
-         item['destination_name'] = item['origin_name'].replace('International', 'Intl.')
-         item['destination_name'] = item['origin_name'].replace('London', 'LDN')
+#         item['origin_name'] = item['origin_name'].replace('London', 'LDN')
+         item['destination_name'] = item['destination_name'].replace('International', 'Intl.')
+#         item['destination_name'] = item['origin_name'].replace('London', 'LDN')
 
     if "error" in data:
         raise ValueError(data["error"])
@@ -44,7 +44,7 @@ def loadDestinationsForDeparture(timetableUrl):
 
     for item in data["stops"]:
          item['station_name'] = item['station_name'].replace('International', 'Intl.')
-         item['station_name'] = item['station_name'].replace('London', 'LDN')
+ #        item['station_name'] = item['station_name'].replace('London', 'LDN')
 
     if "error" in data:
         raise ValueError(data["error"])
