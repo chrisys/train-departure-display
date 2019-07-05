@@ -1,6 +1,6 @@
 import os
 import requests
-
+import json
 
 def loadDeparturesForStation(journeyConfig, appId, apiKey):
     if journeyConfig["departureStation"] == "":
@@ -23,6 +23,12 @@ def loadDeparturesForStation(journeyConfig, appId, apiKey):
 
     data = r.json()
 
+    for item in data["departures"]["all"]:
+         item['origin_name'] = item['origin_name'].replace('International', 'Intl.')
+         item['origin_name'] = item['origin_name'].replace('London', 'LDN')
+         item['destination_name'] = item['origin_name'].replace('International', 'Intl.')
+         item['destination_name'] = item['origin_name'].replace('London', 'LDN')
+
     if "error" in data:
         raise ValueError(data["error"])
 
@@ -33,6 +39,12 @@ def loadDestinationsForDeparture(timetableUrl):
     r = requests.get(url=timetableUrl)
 
     data = r.json()
+
+    data['origin_name'] = data['origin_name'].replace('International', 'Intl.')
+
+    for item in data["stops"]:
+         item['station_name'] = item['station_name'].replace('International', 'Intl.')
+         item['station_name'] = item['station_name'].replace('London', 'LDN')
 
     if "error" in data:
         raise ValueError(data["error"])
