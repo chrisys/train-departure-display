@@ -11,13 +11,12 @@ from helpers import get_device
 from trains import loadDeparturesForStation, loadDestinationsForDeparture
 from luma.core.render import canvas
 from luma.core.virtual import viewport, snapshot
-
+from open import isRun
 
 def loadConfig():
     with open('config.json', 'r') as jsonConfig:
         data = json.load(jsonConfig)
         return data
-
 
 def makeFont(name, size):
     font_path = os.path.abspath(
@@ -120,6 +119,10 @@ def renderDots(draw, width, height):
 
 
 def loadData(apiConfig, journeyConfig):
+    runHours = [int(x) for x in apiConfig['operatingHours'].split('-')]
+    if isRun(runHours[0], runHours[1]) == False:
+        return False, False, journeyConfig['outOfHoursName']
+
     departures, stationName = loadDeparturesForStation(
         journeyConfig, apiConfig["appId"], apiConfig["apiKey"])
 
@@ -127,7 +130,7 @@ def loadData(apiConfig, journeyConfig):
         return False, False, stationName
 
     firstDepartureDestinations = loadDestinationsForDeparture(
-        departures[0]["service_timetable"]["id"])
+        journeyConfig, departures[0]["service_timetable"]["id"])
 
     return departures, firstDepartureDestinations, stationName
 
@@ -236,7 +239,7 @@ try:
     pauseCount = 0
     loop_count = 0
 
-    data = loadData(config["transportApi"], config["journey"])
+    data = loadData(config["transportApi"], config["journey"]) 
     if data[0] == False:
         virtual = drawBlankSignage(
             device, width=widgetWidth, height=widgetHeight, departureStation=data[2])

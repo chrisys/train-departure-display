@@ -2,6 +2,12 @@ import os
 import requests
 import json
 
+def abbrStation(journeyConfig, inputStr):
+    dict = journeyConfig['stationAbbr']
+    for key in dict.keys():
+        inputStr = inputStr.replace(key, dict[key])
+    return inputStr
+
 def loadDeparturesForStation(journeyConfig, appId, apiKey):
     if journeyConfig["departureStation"] == "":
         raise ValueError(
@@ -22,12 +28,11 @@ def loadDeparturesForStation(journeyConfig, appId, apiKey):
     r = requests.get(url=URL, params=PARAMS)
 
     data = r.json()
-
+    #apply abbreviations / replacements to station names (long stations names dont look great on layout)
+    #see config file for replacement list 
     for item in data["departures"]["all"]:
-         item['origin_name'] = item['origin_name'].replace('International', 'Intl.')
-#         item['origin_name'] = item['origin_name'].replace('London', 'LDN')
-         item['destination_name'] = item['destination_name'].replace('International', 'Intl.')
-#         item['destination_name'] = item['origin_name'].replace('London', 'LDN')
+         item['origin_name'] = abbrStation(journeyConfig, item['origin_name'])
+         item['destination_name'] = abbrStation(journeyConfig, item['destination_name'])
 
     if "error" in data:
         raise ValueError(data["error"])
@@ -35,18 +40,18 @@ def loadDeparturesForStation(journeyConfig, appId, apiKey):
     return data["departures"]["all"], data["station_name"]
 
 
-def loadDestinationsForDeparture(timetableUrl):
+def loadDestinationsForDeparture(journeyConfig, timetableUrl):
     r = requests.get(url=timetableUrl)
 
     data = r.json()
 
-    data['origin_name'] = data['origin_name'].replace('International', 'Intl.')
-
+    #apply abbreviations / replacements to station names (long stations names dont look great on layout)
+    #see config file for replacement list 
     for item in data["stops"]:
-         item['station_name'] = item['station_name'].replace('International', 'Intl.')
- #        item['station_name'] = item['station_name'].replace('London', 'LDN')
+         item['station_name'] = abbrStation(journeyConfig, item['station_name'])
 
     if "error" in data:
         raise ValueError(data["error"])
 
     return list(map(lambda x: x["station_name"], data["stops"]))[1:]
+

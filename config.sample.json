@@ -3,7 +3,7 @@
     "departureStation": "",
     "destinationStation": null
   },
-  "refreshTime": 120,
+  "refreshTime": 180,
   "transportApi": {
     "appId": "",
     "apiKey": ""
