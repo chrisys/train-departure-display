@@ -1,11 +1,15 @@
 {
   "journey": {
     "departureStation": "",
-    "destinationStation": null
+    "destinationStation": null,
+    "stationAbbr": {
+      "International": "Intl."
+    }
   },
   "refreshTime": 180,
   "transportApi": {
     "appId": "",
-    "apiKey": ""
+    "apiKey": "",
+    "operatingHours": "0-23"
   }
 }
