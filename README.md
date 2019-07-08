@@ -4,6 +4,7 @@ A set of python scripts to display replica near real-time UK railway station dep
 
    * [Installation](#installation)
    * [Configuration](#configuration)
+   * [Running](#running)
 
 ## Installation
 
@@ -72,3 +73,36 @@ Copy `config.sample.json` to `config.json` and complete.
 `apiKey` - your transport api key
 
 `operating hours` - the range of hours you wish the display to actively request train times, be aware the free tier API has a limit of 1000 calls a day.
+
+
+## Running
+
+There is an example run.sh script in the root directory that will start the application and attempt to talk to a SSD1322 display via SPI. 
+You will need to adjust this to suit your own requirements
+
+For example 
+
+Change the `--display` flag to alter the output mechanism (a list of options can be found in this README: https://github.com/rm-hull/luma.examples). Use `capture` to save to images, and `pygame` to run a visual emulator.
+
+Pass `--interface spi` if you are using SPI to communicate with your screen. Otherwise, the default of `i2c` should suffice.
+
+```bash
+$ python ./src/main.py --display ssd1322 --width 256 --height 64 --interface spi
+```
+
+## Example Output
+
+### Normal Operating Hours
+![](normal.gif)
+### Out Of Hours / No Trains
+![](outofhours.gif)
+
+## Video demo
+
+Chris Hutchinson tweeted a video demo of the original software running on a real device: https://twitter.com/chrishutchinson/status/1136743837244768257 I will update this with a video of the modified version at some point in the future.
+
+## Thanks
+
+A big thanks to Chris Hutchinson who originally built this code! He can be found on GitHub at https://github.com/chrishutchinson/
+
+The fonts used were painstakingly put together by `DanielHartUK` and can be found on GitHub at https://github.com/DanielHartUK/Dot-Matrix-Typeface - A huge thanks for making that resource available!
