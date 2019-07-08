@@ -6,6 +6,8 @@ A set of python scripts to display replica near real-time UK railway station dep
    * [Configuration](#configuration)
    * [Running](#running)
 
+![](normal.gif)
+
 ## Installation
 
 To run this code, you will need Python 3.6+
