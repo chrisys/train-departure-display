@@ -4,3 +4,4 @@ python:
 #install command this may need to be pip3 depending on env
 install:
   - pip install -r requirements.txt
+script: build-test.sh 
