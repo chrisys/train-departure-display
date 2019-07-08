@@ -264,9 +264,6 @@ try:
 
         timeNow = time.time()
         virtual.refresh()
-        if sys.argv[2] == 'gifanim':
-            print('Creating gif for build mode, exit after one loop')
-            break
 
 except KeyboardInterrupt:
     pass
