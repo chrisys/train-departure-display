@@ -15,19 +15,16 @@ You will likely need to set up an alias so that when you type Python you get the
 
 >>### Raspbian Lite
 
->>If you're using Raspbian Lite, you'll also need to install:
+>If you're using Raspbian Lite, you'll also need to install:
+>- `libopenjp2-7`
+>with:
+>```bash
+>$ sudo apt-get install libopenjp2-7
+>```
 
->>- `libopenjp2-7`
+Clone this repo
 
->>with:
-
->>```bash
->>$ sudo apt-get install libopenjp2-7
->>```
-
-1. Clone this repo
-
-2. Install dependencies
+Install dependencies
 
 ```bash
 $ pip3 install -r requirements.txt
