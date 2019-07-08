@@ -1,0 +1,11 @@
+[Unit]
+Description=UK Train Departure Display
+After=multi-user.target
+
+[Service]
+Type=idle
+WorkingDirectory=/var/local/train-departure-screen
+ExecStart=/usr/bin/python /var/local/train-departure-screen/src/main.py
+
+[Install]
+WantedBy=multi-user.target
