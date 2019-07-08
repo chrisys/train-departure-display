@@ -13,17 +13,17 @@ To install the latest version of Python (3.7 at time of writing) on Raspbian, go
 
 You will likely need to set up an alias so that when you type Python you get the latest installed version, a handy guide on how to do this on Raspbin is [here](https://linuxconfig.org/how-to-change-from-default-to-alternative-python-version-on-debian-linux).  If you used the above guide to install the latest Python your path to the executable will be /usr/local/bin/python3.x
 
-### Raspbian Lite
+>>### Raspbian Lite
 
-If you're using Raspbian Lite, you'll also need to install:
+>>If you're using Raspbian Lite, you'll also need to install:
 
-- `libopenjp2-7`
+>>- `libopenjp2-7`
 
-with:
+>>with:
 
-```bash
-$ sudo apt-get install libopenjp2-7
-```
+>>```bash
+>>$ sudo apt-get install libopenjp2-7
+>>```
 
 1. Clone this repo
 
