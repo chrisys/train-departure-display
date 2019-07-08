@@ -2,9 +2,12 @@
 
 > Python script to display replica real-time UK railway station departure screens for SSD13xx devices
 
-## Sample output
+## Example Output
 
-![Example output of the script](normal.gif)
+### Normal Operating Hours
+![](normal.gif)
+### Out Of Hours / No Trains
+![](outofhours.gif)
 
 ## Requirements
 
