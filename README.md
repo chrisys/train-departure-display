@@ -28,9 +28,6 @@ Install dependencies
 ```bash
 $ pip3 install -r requirements.txt
 ```
-If you installed Python using the above guide you will need to use pip3 instead of pip to install the requirements, if not or if your pip is aliased to python 3.6+ you can just use pip
-```bash
-$ pip install -r requirements.txt
-```
+>If you installed Python using the above guide you will need to use pip3 instead of pip to install the requirements, if not or if your pip is aliased to python 3.6+ you can just use pip
 
 ## Configuration 
