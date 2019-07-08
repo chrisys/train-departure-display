@@ -1,1 +1,6 @@
 language: python
+python:
+  - "3.6"
+#install command this may need to be pip3 depending on env
+install:
+  - pip install -r requirements.txt
