@@ -1,10 +1,10 @@
-# UK train departure screen
+# UK Train Departure Display 
 
 > Python script to display replica real-time UK railway station departure screens for SSD13xx devices
 
 ## Sample output
 
-![Example output of the script](capture.png)
+![Example output of the script](normal.gif)
 
 ## Requirements
 
