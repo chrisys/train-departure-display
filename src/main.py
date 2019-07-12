@@ -55,7 +55,8 @@ def renderServiceStatus(departure):
 
 def renderPlatform(departure):
     def drawText(draw, width, height):
-        draw.text((0, 0), text="Plat "+departure["platform"], font=font, fill="yellow")
+        if isinstance(departure["platform"], str):
+            draw.text((0, 0), text="Plat "+departure["platform"], font=font, fill="yellow")
     return drawText
 
 
