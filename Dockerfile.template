@@ -15,9 +15,13 @@ RUN install_packages \
         libavcodec-dev \
         libfreetype6-dev
 
-COPY . /usr/app
 WORKDIR /usr/app
-
+COPY ./requirements.txt .
 RUN pip install -r requirements.txt
+
+COPY src ./src
+COPY balena-run.sh ./
+COPY run.sh ./
+COPY config.sample.json ./
 
 CMD ./balena-run.sh

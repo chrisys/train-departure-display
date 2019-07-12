@@ -29,7 +29,7 @@ def loadDeparturesForStation(journeyConfig, appId, apiKey):
 
     data = r.json()
     #apply abbreviations / replacements to station names (long stations names dont look great on layout)
-    #see config file for replacement list 
+    #see config file for replacement list
     for item in data["departures"]["all"]:
          item['origin_name'] = abbrStation(journeyConfig, item['origin_name'])
          item['destination_name'] = abbrStation(journeyConfig, item['destination_name'])
@@ -46,12 +46,25 @@ def loadDestinationsForDeparture(journeyConfig, timetableUrl):
     data = r.json()
 
     #apply abbreviations / replacements to station names (long stations names dont look great on layout)
-    #see config file for replacement list 
-    for item in data["stops"]:
-         item['station_name'] = abbrStation(journeyConfig, item['station_name'])
+    #see config file for replacement list
+    foundDepartureStation = False
+
+    for item in list(data["stops"]):
+        if item['station_code'] == journeyConfig['departureStation']:
+            foundDepartureStation = True
+
+        if foundDepartureStation == False:
+            data["stops"].remove(item)
+            continue
+
+        item['station_name'] = abbrStation(journeyConfig, item['station_name'])
 
     if "error" in data:
         raise ValueError(data["error"])
 
-    return list(map(lambda x: x["station_name"], data["stops"]))[1:]
+    departureDestinationList = list(map(lambda x: x["station_name"], data["stops"]))[1:]
 
+    if len(departureDestinationList) == 1:
+        departureDestinationList[0] = departureDestinationList[0] + ' only.'
+
+    return departureDestinationList
