@@ -1,4 +1,4 @@
-# UK Train Departure Display 
+# UK Train Departure Display
 
 A set of python scripts to display replica near real-time UK railway station departure data on SSD13xx style screens.
 Uses the publicly available [Transport API](https://www.transportapi.com/).  
@@ -34,7 +34,7 @@ $ pip3 install -r requirements.txt
 ```
 >If you installed Python using the above guide you will need to use pip3 instead of pip to install the requirements, if not or if your pip is aliased to python 3.6+ you can just use pip
 
-## Configuration 
+## Configuration
 
 Sign up for the [Transport API](https://www.transportapi.com/), and generate an app ID and API key (note the free tier has 1000 request a day).
 
@@ -63,11 +63,11 @@ Copy `config.sample.json` to `config.json` and complete.
 
 ### Journey Settings
 
-`departureStation` - the [short code](https://www.nationalrail.co.uk/stations_destinations/48541.aspx) for the starting station 
+`departureStation` - the [short code](https://www.nationalrail.co.uk/stations_destinations/48541.aspx) for the starting station
 
-`destinationStation` - the optional [short code](https://www.nationalrail.co.uk/stations_destinations/48541.aspx) for the destination station 
+`destinationStation` - the optional [short code](https://www.nationalrail.co.uk/stations_destinations/48541.aspx) for the destination station
 
-`stationAbbr` - a list of words and their abbreviations that can be used to shorten station names, useful for small displays. 
+`stationAbbr` - a list of words and their abbreviations that can be used to shorten station names, useful for small displays.
 
 ### Transport API Settings
 
@@ -80,10 +80,10 @@ Copy `config.sample.json` to `config.json` and complete.
 
 ## Running
 
-There is an example run.sh script in the root directory that will start the application and attempt to talk to a SSD1322 display via SPI. 
+There is an example run.sh script in the root directory that will start the application and attempt to talk to a SSD1322 display via SPI.
 You will need to adjust this to suit your own requirements
 
-For example 
+For example
 
 Change the `--display` flag to alter the output mechanism (a list of options can be found in this README: https://github.com/rm-hull/luma.examples). Use `capture` to save to images, and `pygame` to run a visual emulator.
 
@@ -92,6 +92,24 @@ Pass `--interface spi` if you are using SPI to communicate with your screen. Oth
 ```bash
 $ python ./src/main.py --display ssd1322 --width 256 --height 64 --interface spi
 ```
+
+## BalenaCloud Installation
+
+A Dockerfile template is included in order to run this project on the [balenaCloud](https://balena.io/cloud) platform.
+
+To use this project, sign up, add an application and device as per the [getting started](https://www.balena.io/docs/learn/getting-started/raspberrypi3/python/) guide. Then use the [balena CLI](https://github.com/balena-io/balena-cli) to push the project to your Pi.
+
+This allows you to easily deploy multiple devices and configure them from the dashboard with the following variables which will then automatically generate the `config.json` file:
+
+| Key                              | Example Value
+|----------------------------------|----------
+|`TZ`  | `Europe/London` ([timezone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones))
+|`departureStation`  | `PAD` ([station code](https://www.nationalrail.co.uk/stations_destinations/48541.aspx))
+|`refreshTime` | `120` (seconds between data refresh)
+|`transportApi_apiKey` | `798c7ddfdeadbeef87987e9a8e79` (transport API key)
+|`transportApi_appId` | `12345678` (transport API application ID)
+|`transportApi_operatingHours` | `8-22` (hours during which the data will refresh at the interval above)
+
 
 ## Example Output
 
