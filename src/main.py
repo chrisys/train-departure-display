@@ -42,11 +42,13 @@ def renderDestination(departure, font):
 
 def renderServiceStatus(departure):
     def drawText(draw, width, height):
+        train = ""
+
+        if isinstance(departure["expected_departure_time"], str):
+            train = 'Exp '+departure["expected_departure_time"]
 
         if departure["aimed_departure_time"] == departure["expected_departure_time"]:
             train = "On time"
-        else:
-            train = 'Exp '+departure["expected_departure_time"]
 
         w, h = draw.textsize(train, font)
         draw.text((width-w,0), text=train, font=font, fill="yellow")
@@ -83,17 +85,6 @@ def renderStations(stations):
             stationRenderCount += 1
 
     return drawText
-
-
-def renderServiceDetails(draw, width, height):
-    details = "This train is formed of 10 coaches"
-    draw.text((0, 0), text=details, font=font, fill="yellow")
-
-
-def renderSWR(draw, width, height):
-    swr = "SWR"
-    draw.text((0, 0), text=swr, font=fontBold, fill="yellow")
-
 
 def renderTime(draw, width, height):
     rawTime = datetime.now().time()
@@ -199,10 +190,10 @@ def drawSignage(device, width, height, data):
     # First measure the text size
     with canvas(device) as draw:
         w, h = draw.textsize(status, font)
-        pw, ph = draw.textsize("Platform 88", font)
+        pw, ph = draw.textsize(" Plat 88", font)
 
     rowOneA = snapshot(
-        width - w - pw, 10, renderDestination(departures[0], fontBold), interval=10)
+        width - w - pw, 10, renderDestination(departures[0], fontBold), interval=0.1)
     rowOneB = snapshot(w, 10, renderServiceStatus(
         departures[0]), interval=1)
     rowOneC = snapshot(pw, 10, renderPlatform(departures[0]), interval=10)
