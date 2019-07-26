@@ -14,6 +14,7 @@ from luma.core.interface.serial import spi
 from luma.core.render import canvas
 from luma.oled.device import ssd1322
 from luma.core.virtual import viewport, snapshot
+from luma.core.sprite_system import framerate_regulator
 
 from open import isRun
 
@@ -194,10 +195,10 @@ def drawSignage(device, width, height, data):
     # First measure the text size
     with canvas(device) as draw:
         w, h = draw.textsize(status, font)
-        pw, ph = draw.textsize(" Plat 88", font)
+        pw, ph = draw.textsize("Plat 88", font)
 
     rowOneA = snapshot(
-        width - w - pw, 10, renderDestination(departures[0], fontBold), interval=0.1)
+        width - w - pw - 5, 10, renderDestination(departures[0], fontBold), interval=10)
     rowOneB = snapshot(w, 10, renderServiceStatus(
         departures[0]), interval=1)
     rowOneC = snapshot(pw, 10, renderPlatform(departures[0]), interval=10)
@@ -219,7 +220,7 @@ def drawSignage(device, width, height, data):
             departures[2]), interval=1)
         rowFourC = snapshot(pw, 10, renderPlatform(departures[2]), interval=10)
 
-    rowTime = snapshot(width, 14, renderTime, interval=1)
+    rowTime = snapshot(width, 14, renderTime, interval=0.1)
 
     if len(virtualViewport._hotspots) > 0:
         for hotspot, xy in virtualViewport._hotspots:
@@ -266,6 +267,8 @@ try:
     pauseCount = 0
     loop_count = 0
 
+    regulator = framerate_regulator(fps=10)
+
     data = loadData(config["transportApi"], config["journey"])
     if data[0] == False:
         virtual = drawBlankSignage(
@@ -278,19 +281,20 @@ try:
     timeNow = time.time()
 
     while True:
-        if(timeNow - timeAtStart >= config["refreshTime"]):
-            data = loadData(config["transportApi"], config["journey"])
-            if data[0] == False:
-                virtual = drawBlankSignage(
-                    device, width=widgetWidth, height=widgetHeight, departureStation=data[2])
-            else:
-                virtual = drawSignage(device, width=widgetWidth,
-                                      height=widgetHeight, data=data)
+        with regulator:
+            if(timeNow - timeAtStart >= config["refreshTime"]):
+                data = loadData(config["transportApi"], config["journey"])
+                if data[0] == False:
+                    virtual = drawBlankSignage(
+                        device, width=widgetWidth, height=widgetHeight, departureStation=data[2])
+                else:
+                    virtual = drawSignage(device, width=widgetWidth,
+                                          height=widgetHeight, data=data)
 
-            timeAtStart = time.time()
+                timeAtStart = time.time()
 
-        timeNow = time.time()
-        virtual.refresh()
+            timeNow = time.time()
+            virtual.refresh()
 
 except KeyboardInterrupt:
     pass
