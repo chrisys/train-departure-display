@@ -252,8 +252,8 @@ def drawSignage(device, width, height, data):
 try:
     config = loadConfig()
 
-    serial = spi(device=0, port=0)
-    device = ssd1322(serial, 256, 64, 0, "1")
+    serial = spi()
+    device = ssd1322(serial, mode="1")
     font = makeFont("Dot Matrix Regular.ttf", 10)
     fontBold = makeFont("Dot Matrix Bold.ttf", 10)
     fontBoldTall = makeFont("Dot Matrix Bold Tall.ttf", 10)
