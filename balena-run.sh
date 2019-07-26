@@ -9,4 +9,4 @@ if [ ! -f config.json ]; then
   jq .transportApi.operatingHours=\""${transportApi_operatingHours}"\" config.json | sponge config.json
 fi
 
-./run.sh
+python ./src/main.py

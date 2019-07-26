@@ -7,10 +7,14 @@ from datetime import timedelta
 from timeloop import Timeloop
 from datetime import datetime
 from PIL import ImageFont, Image
-from helpers import get_device
+
 from trains import loadDeparturesForStation, loadDestinationsForDeparture
+
+from luma.core.interface.serial import spi
 from luma.core.render import canvas
+from luma.oled.device import ssd1322
 from luma.core.virtual import viewport, snapshot
+
 from open import isRun
 
 def loadConfig():
@@ -248,7 +252,8 @@ def drawSignage(device, width, height, data):
 try:
     config = loadConfig()
 
-    device = get_device()
+    serial = spi(device=0, port=0)
+    device = ssd1322(serial, 256, 64, 0, "1")
     font = makeFont("Dot Matrix Regular.ttf", 10)
     fontBold = makeFont("Dot Matrix Bold.ttf", 10)
     fontBoldTall = makeFont("Dot Matrix Bold Tall.ttf", 10)

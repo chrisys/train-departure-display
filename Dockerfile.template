@@ -1,19 +1,12 @@
-FROM balenalib/%%BALENA_MACHINE_NAME%%-python:3.7-build
+FROM balenalib/%%BALENA_MACHINE_NAME%%-debian-python:3.7-buster-build
 
 RUN install_packages \
         jq \
         moreutils \
         libopenjp2-7 \
-        libsdl-image1.2-dev \
-        libsdl-mixer1.2-dev \
-        libsdl-ttf2.0-dev \
-        libsdl1.2-dev \
-        libsmpeg-dev \
-        libportmidi-dev \
-        libswscale-dev \
-        libavformat-dev \
-        libavcodec-dev \
-        libfreetype6-dev
+        libfreetype6-dev \
+        libjpeg-dev \
+        libtiff5
 
 WORKDIR /usr/app
 COPY ./requirements.txt .
@@ -21,7 +14,6 @@ RUN pip install -r requirements.txt
 
 COPY src ./src
 COPY balena-run.sh ./
-COPY run.sh ./
 COPY config.sample.json ./
 
 CMD ./balena-run.sh
