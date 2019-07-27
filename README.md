@@ -1,4 +1,4 @@
-# Balena UK Train Departure Display
+# Balena UK Train Departure Display (next train indicator)
 
 ![](assets/sample.jpeg)
 
