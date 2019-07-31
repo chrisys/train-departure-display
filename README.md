@@ -17,6 +17,8 @@ To use this project, sign up, add an application and device as per the [getting 
 
 This allows you to easily deploy multiple devices and configure them from the dashboard with the following variables which will then automatically generate the `config.json` file required.
 
+**There is also [a full writeup on the balena blog](https://www.balena.io/blog/build-a-raspberry-pi-powered-train-station-oled-sign-for-your-desk/).**
+
 
 ## Configuration
 
