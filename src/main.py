@@ -254,7 +254,7 @@ try:
     config = loadConfig()
 
     serial = spi()
-    device = ssd1322(serial, mode="1")
+    device = ssd1322(serial, mode="1", rotate=2)
     font = makeFont("Dot Matrix Regular.ttf", 10)
     fontBold = makeFont("Dot Matrix Bold.ttf", 10)
     fontBoldTall = makeFont("Dot Matrix Bold Tall.ttf", 10)
