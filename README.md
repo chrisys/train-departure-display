@@ -53,6 +53,10 @@ The connections for one of these displays to the Raspberry Pi GPIO header are as
 | 15 | `RST` (reset) | 22 (`BCM25`) |
 | 16 | `CS` (chip select) | 24 (`BCM8 CE0`)
 
+## Case
+
+There are .stl 3D models for a case available in the assets directory.
+
 
 ## Credits
 
