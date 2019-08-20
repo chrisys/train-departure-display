@@ -22,7 +22,7 @@ This allows you to easily deploy multiple devices and configure them from the da
 
 ## Configuration
 
-Sign up for the [Transport API](https://www.transportapi.com/), and generate an app ID and API key (note the free tier has 1000 request a day).
+Sign up for the [Transport API](https://www.transportapi.com/), and generate an app ID and API key (note the free tier has a limit of 1000 requests a day).
 
 These environment variables are specified using the [balenaCloud dashboard](https://www.balena.io/docs/learn/manage/serv-vars/), allowing you to set up mutiple signs in one application for different stations.
 
@@ -53,10 +53,11 @@ The connections for one of these displays to the Raspberry Pi GPIO header are as
 | 15 | `RST` (reset) | 22 (`BCM25`) |
 | 16 | `CS` (chip select) | 24 (`BCM8 CE0`)
 
+![](assets/pi-display-connections_bb.png)
+
 ## Case
 
 There are .stl 3D models for a case available in the assets directory.
-
 
 ## Credits
 
