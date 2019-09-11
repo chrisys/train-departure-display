@@ -49,11 +49,14 @@ def renderServiceStatus(departure):
     def drawText(draw, width, height):
         train = ""
 
-        if isinstance(departure["expected_departure_time"], str):
-            train = 'Exp '+departure["expected_departure_time"]
+        if departure["status"] == "CANCELLED":
+            train = "Cancelled"
+        else:
+            if isinstance(departure["expected_departure_time"], str):
+                train = 'Exp '+departure["expected_departure_time"]
 
-        if departure["aimed_departure_time"] == departure["expected_departure_time"]:
-            train = "On time"
+            if departure["aimed_departure_time"] == departure["expected_departure_time"]:
+                train = "On time"
 
         w, h = draw.textsize(train, font)
         draw.text((width-w,0), text=train, font=font, fill="yellow")
@@ -62,8 +65,11 @@ def renderServiceStatus(departure):
 
 def renderPlatform(departure):
     def drawText(draw, width, height):
-        if isinstance(departure["platform"], str):
-            draw.text((0, 0), text="Plat "+departure["platform"], font=font, fill="yellow")
+        if departure["mode"] == "bus":
+            draw.text((0, 0), text="BUS", font=font, fill="yellow")
+        else:
+            if isinstance(departure["platform"], str):
+                draw.text((0, 0), text="Plat "+departure["platform"], font=font, fill="yellow")
     return drawText
 
 
