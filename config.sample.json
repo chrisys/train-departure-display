@@ -2,6 +2,7 @@
   "journey": {
     "departureStation": "",
     "destinationStation": null,
+    "timeOffset": "",
     "stationAbbr": {
       "International": "Intl."
     }
