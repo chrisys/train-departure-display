@@ -1,4 +1,4 @@
-FROM balenalib/%%BALENA_MACHINE_NAME%%-debian-python:3.7-buster
+FROM balenalib/%%BALENA_MACHINE_NAME%%-debian-python:3.7-buster-build
 
 RUN install_packages \
         jq \
@@ -10,7 +10,7 @@ RUN install_packages \
 
 WORKDIR /usr/app
 COPY ./requirements.txt .
-RUN pip install -r requirements.txt --index-url=https://www.piwheels.org/simple
+RUN pip install -r requirements.txt
 
 COPY src ./src
 COPY balena-run.sh ./
