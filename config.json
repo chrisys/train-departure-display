@@ -1,7 +1,8 @@
 {
   "journey": {
-    "departureStation": "",
+    "departureStation": "PAD",
     "destinationStation": null,
+    "outOfHoursName": "London Paddington",
     "stationAbbr": {
       "International": "Intl."
     }

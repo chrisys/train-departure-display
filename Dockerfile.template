@@ -1,5 +1,8 @@
 FROM balenalib/%%BALENA_MACHINE_NAME%%-debian-python:3.7-buster-build
 
+WORKDIR /usr/app
+COPY pip.conf /etc/
+
 RUN install_packages \
         jq \
         moreutils \
@@ -8,13 +11,12 @@ RUN install_packages \
         libjpeg-dev \
         libtiff5
 
-WORKDIR /usr/app
 COPY ./requirements.txt .
 RUN pip install -r requirements.txt
 
 COPY src ./src
 COPY balena-run.sh ./
-COPY config.sample.json ./
+COPY config.json ./
 
 RUN chmod +x balena-run.sh
 
