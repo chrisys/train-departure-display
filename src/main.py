@@ -206,24 +206,24 @@ def drawSignage(device, width, height, data):
     rowOneA = snapshot(
         width - w - pw - 5, 10, renderDestination(departures[0], fontBold), interval=10)
     rowOneB = snapshot(w, 10, renderServiceStatus(
-        departures[0]), interval=1)
+        departures[0]), interval=10)
     rowOneC = snapshot(pw, 10, renderPlatform(departures[0]), interval=10)
     rowTwoA = snapshot(callingWidth, 10, renderCallingAt, interval=100)
     rowTwoB = snapshot(width - callingWidth, 10,
-                       renderStations(", ".join(firstDepartureDestinations)), interval=0.1)
+                       renderStations(", ".join(firstDepartureDestinations)), interval=0.2)
 
     if(len(departures) > 1):
         rowThreeA = snapshot(width - w - pw, 10, renderDestination(
             departures[1], font), interval=10)
         rowThreeB = snapshot(w, 10, renderServiceStatus(
-            departures[1]), interval=1)
+            departures[1]), interval=10)
         rowThreeC = snapshot(pw, 10, renderPlatform(departures[1]), interval=10)
 
     if(len(departures) > 2):
         rowFourA = snapshot(width - w - pw, 10, renderDestination(
             departures[2], font), interval=10)
         rowFourB = snapshot(w, 10, renderServiceStatus(
-            departures[2]), interval=1)
+            departures[2]), interval=10)
         rowFourC = snapshot(pw, 10, renderPlatform(departures[2]), interval=10)
 
     rowTime = snapshot(width, 14, renderTime, interval=0.1)
@@ -273,7 +273,7 @@ try:
     pauseCount = 0
     loop_count = 0
 
-    regulator = framerate_regulator(fps=10)
+    regulator = framerate_regulator(fps=0)
 
     data = loadData(config["transportApi"], config["journey"])
     if data[0] == False:
