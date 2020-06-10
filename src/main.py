@@ -193,7 +193,7 @@ def drawNRE(device, width, height):
 
 
 def drawBlankSignage(device, width, height, departureStation):
-    global stationRenderCount, pauseCount, departurePauseCount, departureRenderCount
+    global stationRenderCount, pauseCount
 
     with canvas(device) as draw:
         welcomeSize = draw.textsize("Welcome to", fontBold)
@@ -225,7 +225,7 @@ def drawBlankSignage(device, width, height, departureStation):
 
 
 def drawSignage(device, width, height, data):
-    global stationRenderCount, pauseCount, departurePauseCount, departureRenderCount
+    global stationRenderCount, pauseCount
 
     device.clear()
 
@@ -280,8 +280,6 @@ def drawSignage(device, width, height, data):
 
     stationRenderCount = 0
     pauseCount = 0
-    departurePauseCount = 0
-    departureRenderCount = 0
 
     virtualViewport.add_hotspot(rowOneA, (0, 0))
     virtualViewport.add_hotspot(rowOneB, (width - w, 0))
@@ -318,8 +316,6 @@ try:
 
     stationRenderCount = 0
     pauseCount = 0
-    departurePauseCount = 0
-    departureRenderCount = 0
     loop_count = 0
 
     regulator = framerate_regulator(fps=0)
