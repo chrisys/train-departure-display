@@ -68,7 +68,7 @@ def renderServiceStatus(departure):
 
 def renderPlatform(departure):
     def drawText(draw, width, height):
-        if "platform" in departure:   
+        if "platform" in departure:
             if (departure["platform"].lower() == "bus"):
                 draw.text((0, 0), text="BUS", font=font, fill="yellow")
             else:
@@ -132,7 +132,7 @@ def renderNRE(xOffset):
         text = "National Rail Enquiries"
         draw.text((int(xOffset), 0), text=text, font=fontBold, fill="yellow")
 
-    return drawText    
+    return drawText
 
 
 
@@ -165,7 +165,7 @@ def loadData(apiConfig, journeyConfig):
 
 def drawNRE(device, width, height):
     device.clear()
-    
+
     virtualViewport = viewport(device, width=width, height=height)
 
     with canvas(device) as draw:
@@ -193,7 +193,7 @@ def drawNRE(device, width, height):
 
 
 def drawBlankSignage(device, width, height, departureStation):
-    global stationRenderCount, pauseCount
+    global stationRenderCount, pauseCount, departurePauseCount, departureRenderCount
 
     with canvas(device) as draw:
         welcomeSize = draw.textsize("Welcome to", fontBold)
@@ -225,7 +225,7 @@ def drawBlankSignage(device, width, height, departureStation):
 
 
 def drawSignage(device, width, height, data):
-    global stationRenderCount, pauseCount
+    global stationRenderCount, pauseCount, departurePauseCount, departureRenderCount
 
     device.clear()
 
@@ -254,7 +254,7 @@ def drawSignage(device, width, height, data):
     rowOneC = snapshot(pw, 10, renderPlatform(departures[0]), interval=10)
     rowTwoA = snapshot(callingWidth, 10, renderCallingAt, interval=100)
     rowTwoB = snapshot(width - callingWidth, 10,
-                       renderStations(firstDepartureDestinations), interval=0.05)
+                       renderStations(firstDepartureDestinations), interval=0.15)
     # rowTwoB = snapshot(width - callingWidth, 10,
     #                    renderStations(", ".join(firstDepartureDestinations)), interval=0.1)
 
@@ -280,6 +280,8 @@ def drawSignage(device, width, height, data):
 
     stationRenderCount = 0
     pauseCount = 0
+    departurePauseCount = 0
+    departureRenderCount = 0
 
     virtualViewport.add_hotspot(rowOneA, (0, 0))
     virtualViewport.add_hotspot(rowOneB, (width - w, 0))
@@ -305,7 +307,7 @@ def drawSignage(device, width, height, data):
 try:
     config = loadConfig()
     serial = spi()
-    device = ssd1322(serial, mode="1", rotate=2)
+    device = ssd1322(serial, mode="1", rotate=config['screenRotation'])
     font = makeFont("Dot Matrix Regular.ttf", 10)
     fontBold = makeFont("Dot Matrix Bold.ttf", 10)
     fontBoldTall = makeFont("Dot Matrix Bold Tall.ttf", 10)
@@ -316,9 +318,11 @@ try:
 
     stationRenderCount = 0
     pauseCount = 0
+    departurePauseCount = 0
+    departureRenderCount = 0
     loop_count = 0
 
-    regulator = framerate_regulator(fps=5)
+    regulator = framerate_regulator(fps=0)
 
     FirstRun = True
 
@@ -339,9 +343,9 @@ try:
 
     while True:
         with regulator:
-            
+
             if(timeNow - timeAtStart >= config["refreshTime"]):
-                
+
                 # display NRE attribution while data loads
                 virtual = drawNRE(device, width=widgetWidth, height=widgetHeight)
                 virtual.refresh()

@@ -1,0 +1,17 @@
+{
+  "journey": {
+    "departureStation": "STP",
+    "destinationStation": "",
+    "timeOffset": "0",
+    "stationAbbr": {
+      "International": "Intl."
+    }
+  },
+  "refreshTime": 180,
+  "screenRotation": 2,
+  "apiKey": "",
+  "transportApi": {
+    "apiKey": "",
+    "operatingHours": "0-23"
+  }
+}

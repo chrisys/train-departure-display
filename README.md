@@ -35,6 +35,7 @@ These environment variables are specified using the [balenaCloud dashboard](http
 |`timeOffset`  | `5` [optional] (Time offset, in minutes, for the departure board. Can be used to see into the future (positive value) or past (negative value). Set 5 if you live 5 min from the station and want to hide departures that are too soon to catch)
 | `outOfHoursName` | `London Paddington` (name shown when current time is outside the `transportApi_operatingHours`)
 |`refreshTime` | `120` (seconds between data refresh)
+|`screenRotation` | `2` (rotates the output of the OLED)
 |`transportApi_apiKey` | `f1ff949c-7693-49b3-8242-e3354fe91b94` (OpenLDBWS API key)
 |`transportApi_operatingHours` | `8-22` (hours during which the data will refresh at the interval above)
 
