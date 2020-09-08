@@ -1,0 +1,9 @@
+defaultDeviceType: raspberry-pi
+applicationEnvironmentVariables:
+    - TZ: Europe/London
+    - departureStation: PAD
+    - outOfHoursName: London Paddington
+    - refreshTime: 120
+    - transportApi_apiKey: updateme
+    - transportApi_appId: updateme
+    - transportApi_operatingHours: 8-22
