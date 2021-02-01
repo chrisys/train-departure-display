@@ -1,14 +1,16 @@
-version: "2"
-slug: "train-departure-display"
 name: "Train Departure Display"
 type: "sw.application"
+description: "A balenaCloud Raspberry Pi app to display replica near real-time UK railway station departure data on SSD1322 screens."
 assets:
-  - url: "https://github.com/balenalabs/uk-train-departure-display"
-    name: "repository"
-  - url: "https://raw.githubusercontent.com/balenalabs/uk-train-departure-display/master/assets/logo.png"
-    name: "logo"
+  repository:
+    type: "blob.asset"
+    data:
+      url: "https://github.com/balenalabs/uk-train-departure-display"
+  logo:
+    type: "blob.asset"
+    data:
+      url: "https://raw.githubusercontent.com/balenalabs/uk-train-departure-display/master/assets/logo.png"
 data:
-  description: "A balenaCloud Raspberry Pi app to display replica near real-time UK railway station departure data on SSD1322 screens."
   defaultDeviceType: raspberry-pi
   supportedDeviceTypes:
     - "raspberry-pi"
