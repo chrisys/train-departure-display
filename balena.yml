@@ -3,6 +3,7 @@ type: sw.application
 description: >-
   A balenaCloud Raspberry Pi app to display replica near real-time UK railway
   station departure data on SSD1322 screens.
+joinable: false
 assets:
   repository:
     type: blob.asset
