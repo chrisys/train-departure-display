@@ -27,4 +27,4 @@ data:
     - transportApi_apiKey: updateme
     - transportApi_appId: updateme
     - transportApi_operatingHours: 8-22
-version: 0.0.8
+version: 0.0.9
