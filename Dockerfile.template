@@ -1,17 +1,16 @@
-FROM balenalib/%%BALENA_MACHINE_NAME%%-debian-python:3.7-buster-build
+FROM balenalib/%%BALENA_MACHINE_NAME%%-debian-python:3.7-buster-run
 
 WORKDIR /usr/app
-COPY pip.conf /etc/
 
 RUN install_packages \
-        moreutils \
         libopenjp2-7 \
         libfreetype6-dev \
         libjpeg-dev \
-        libtiff5
+        libtiff5 \
+        libxcb1
 
 COPY ./requirements.txt .
-RUN pip install -r requirements.txt
+RUN pip install -r requirements.txt --no-cache-dir --extra-index-url=https://www.piwheels.org/simple
 
 COPY src ./src
 
