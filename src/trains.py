@@ -31,11 +31,17 @@ def loadDeparturesForStation(journeyConfig, appId, apiKey):
         raise ValueError("Server error when loading data from TransportAPI - check your key and appId")
 
     data = r.json()
+    
     #apply abbreviations / replacements to station names (long stations names dont look great on layout)
-    #see config file for replacement list
     for item in data["departures"]["all"]:
-         item['origin_name'] = abbrStation(journeyConfig, item['origin_name'])
-         item['destination_name'] = abbrStation(journeyConfig, item['destination_name'])
+        item['origin_name'] = abbrStation(journeyConfig, item['origin_name'])
+        item['destination_name'] = abbrStation(journeyConfig, item['destination_name'])
+
+    for item in list(data["departures"]["all"]):
+        if journeyConfig['departurePlatform'] is not None:
+            if item['platform'] != journeyConfig['departurePlatform']:
+                # Remove this item if the platform does not match
+                data["departures"]["all"].remove(item)
 
     if "error" in data:
         raise ValueError(data["error"])

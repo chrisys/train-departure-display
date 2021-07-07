@@ -34,6 +34,7 @@ These environment variables are specified using the [balenaCloud dashboard](http
 |`TZ`  | `Europe/London` ([timezone](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones))
 |`departureStation`  | `PAD` ([station code](https://www.nationalrail.co.uk/stations_destinations/48541.aspx))
 |`destinationStation`  | `HWV` ([station code](https://www.nationalrail.co.uk/stations_destinations/48541.aspx)) [optional] Filters trains shown to only those that call at this station
+|`departurePlatform` | `7` (filter departures shown to only those departing from this platform)
 | `outOfHoursName` | `London Paddington` (name shown when current time is outside the `transportApi_operatingHours`)
 |`refreshTime` | `120` (seconds between data refresh)
 |`transportApi_apiKey` | `798c7ddfdeadbeef87987e9a8e79` (transport API key)
