@@ -26,6 +26,9 @@ def loadDeparturesForStation(journeyConfig, appId, apiKey):
               'calling_at': journeyConfig["destinationStation"]}
 
     r = requests.get(url=URL, params=PARAMS)
+    
+    if r.status_code != 200:
+        raise ValueError("Server error when loading data from TransportAPI - check your settings")
 
     data = r.json()
     #apply abbreviations / replacements to station names (long stations names dont look great on layout)
@@ -42,6 +45,9 @@ def loadDeparturesForStation(journeyConfig, appId, apiKey):
 
 def loadDestinationsForDeparture(journeyConfig, timetableUrl):
     r = requests.get(url=timetableUrl)
+
+    if r.status_code != 200:
+        raise ValueError("Server error when loading data from TransportAPI - check your settings")
 
     data = r.json()
 
