@@ -3,7 +3,7 @@ type: sw.application
 description: >-
   A balenaCloud Raspberry Pi app to display replica near real-time UK railway
   station departure data on SSD1322 screens.
-joinable: false
+joinable: "false"
 assets:
   repository:
     type: blob.asset
@@ -24,7 +24,7 @@ data:
     - departureStation: PAD
     - outOfHoursName: London Paddington
     - refreshTime: 120
-    - transportApi_apiKey: updateme
-    - transportApi_appId: updateme
+    - transportApi_apiKey: UPDATE_ME
+    - transportApi_appId: UPDATE_ME
     - transportApi_operatingHours: 8-22
 version: 0.0.9

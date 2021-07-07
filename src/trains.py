@@ -11,11 +11,11 @@ def abbrStation(journeyConfig, inputStr):
 def loadDeparturesForStation(journeyConfig, appId, apiKey):
     if journeyConfig["departureStation"] == "":
         raise ValueError(
-            "Please set the journey.departureStation property in config.json")
+            "Please configure the departureStation environment variable")
 
-    if appId == "" or apiKey == "":
+    if appId == None or apiKey == None:
         raise ValueError(
-            "Please complete the transportApi section of your config.json file")
+            "Please configure the transportApi_appId and transportApi_apiKey environment variables")
 
     departureStation = journeyConfig["departureStation"]
 
@@ -28,7 +28,7 @@ def loadDeparturesForStation(journeyConfig, appId, apiKey):
     r = requests.get(url=URL, params=PARAMS)
     
     if r.status_code != 200:
-        raise ValueError("Server error when loading data from TransportAPI - check your settings")
+        raise ValueError("Server error when loading data from TransportAPI - check your key and appId")
 
     data = r.json()
     #apply abbreviations / replacements to station names (long stations names dont look great on layout)
@@ -47,7 +47,7 @@ def loadDestinationsForDeparture(journeyConfig, timetableUrl):
     r = requests.get(url=timetableUrl)
 
     if r.status_code != 200:
-        raise ValueError("Server error when loading data from TransportAPI - check your settings")
+        raise ValueError("Server error when loading data from TransportAPI - check your key and appId")
 
     data = r.json()
 
