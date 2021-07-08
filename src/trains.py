@@ -11,11 +11,11 @@ def abbrStation(journeyConfig, inputStr):
 def loadDeparturesForStation(journeyConfig, appId, apiKey):
     if journeyConfig["departureStation"] == "":
         raise ValueError(
-            "Please set the journey.departureStation property in config.json")
+            "Please configure the departureStation environment variable")
 
-    if appId == "" or apiKey == "":
+    if appId == None or apiKey == None:
         raise ValueError(
-            "Please complete the transportApi section of your config.json file")
+            "Please configure the transportApi_appId and transportApi_apiKey environment variables")
 
     departureStation = journeyConfig["departureStation"]
 
@@ -26,13 +26,22 @@ def loadDeparturesForStation(journeyConfig, appId, apiKey):
               'calling_at': journeyConfig["destinationStation"]}
 
     r = requests.get(url=URL, params=PARAMS)
+    
+    if r.status_code != 200:
+        raise ValueError("Server error when loading data from TransportAPI - check your key and appId")
 
     data = r.json()
+    
     #apply abbreviations / replacements to station names (long stations names dont look great on layout)
-    #see config file for replacement list
     for item in data["departures"]["all"]:
-         item['origin_name'] = abbrStation(journeyConfig, item['origin_name'])
-         item['destination_name'] = abbrStation(journeyConfig, item['destination_name'])
+        item['origin_name'] = abbrStation(journeyConfig, item['origin_name'])
+        item['destination_name'] = abbrStation(journeyConfig, item['destination_name'])
+
+    for item in list(data["departures"]["all"]):
+        if journeyConfig['departurePlatform'] is not None:
+            if item['platform'] != journeyConfig['departurePlatform']:
+                # Remove this item if the platform does not match
+                data["departures"]["all"].remove(item)
 
     if "error" in data:
         raise ValueError(data["error"])
@@ -42,6 +51,9 @@ def loadDeparturesForStation(journeyConfig, appId, apiKey):
 
 def loadDestinationsForDeparture(journeyConfig, timetableUrl):
     r = requests.get(url=timetableUrl)
+
+    if r.status_code != 200:
+        raise ValueError("Server error when loading data from TransportAPI - check your key and appId")
 
     data = r.json()
 

@@ -9,19 +9,14 @@ from datetime import datetime
 from PIL import ImageFont, Image
 
 from trains import loadDeparturesForStation, loadDestinationsForDeparture
+from config import loadConfig
+from open import isRun
 
 from luma.core.interface.serial import spi
 from luma.core.render import canvas
 from luma.oled.device import ssd1322
 from luma.core.virtual import viewport, snapshot
 from luma.core.sprite_system import framerate_regulator
-
-from open import isRun
-
-def loadConfig():
-    with open('config.json', 'r') as jsonConfig:
-        data = json.load(jsonConfig)
-        return data
 
 def makeFont(name, size):
     font_path = os.path.abspath(
