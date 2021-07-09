@@ -10,7 +10,7 @@ def loadConfig():
 
     data["journey"]["departureStation"] = os.getenv("departureStation") or "PAD"
     data["journey"]["destinationStation"] = os.getenv("destinationStation") or None
-    data["journey"]["outOfHoursName"] = os.getenv("departureStation") or "London Paddington"
+    data["journey"]["outOfHoursName"] = os.getenv("outOfHoursName") or "London Paddington"
     data["journey"]["departurePlatform"] = os.getenv("departurePlatform") or None
     data["journey"]["stationAbbr"] = { "International": "Intl." }
 
