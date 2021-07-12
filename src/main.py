@@ -131,6 +131,7 @@ def loadData(apiConfig, journeyConfig):
     if isRun(runHours[0], runHours[1]) == False:
         return False, False, journeyConfig['outOfHoursName']
 
+    print('Updating Data')
     departures, stationName = loadDeparturesForStation(
         journeyConfig, apiConfig["appId"], apiConfig["apiKey"])
 
@@ -287,7 +288,6 @@ try:
     while True:
         with regulator:
             if(timeNow - timeAtStart >= config["refreshTime"]):
-                print('Updating Data')
                 print('Effective FPS: ' + str(round(regulator.effective_FPS(),2)))
                 data = loadData(config["transportApi"], config["journey"])
                 if data[0] == False:
