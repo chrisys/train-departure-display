@@ -15,7 +15,7 @@ from open import isRun
 from luma.core.interface.serial import spi
 from luma.core.render import canvas
 from luma.oled.device import ssd1322
-from luma.core.virtual import viewport, snapshot
+from luma.core.virtual import viewport, snapshot, hotspot
 from luma.core.sprite_system import framerate_regulator
 
 def makeFont(name, size):
@@ -157,15 +157,15 @@ def drawBlankSignage(device, width, height, departureStation):
     virtualViewport = viewport(device, width=width, height=height)
 
     rowOne = snapshot(width, 10, renderWelcomeTo(
-        (width - welcomeSize[0]) / 2), interval=10)
+        (width - welcomeSize[0]) / 2), interval=config["refreshTime"])
     rowTwo = snapshot(width, 10, renderDepartureStation(
-        departureStation, (width - stationSize[0]) / 2), interval=10)
-    rowThree = snapshot(width, 10, renderDots, interval=10)
-    rowTime = snapshot(width, 14, renderTime, interval=1)
+        departureStation, (width - stationSize[0]) / 2), interval=config["refreshTime"])
+    rowThree = snapshot(width, 10, renderDots, interval=config["refreshTime"])
+    rowTime = hotspot(width, 14, renderTime)
 
     if len(virtualViewport._hotspots) > 0:
-        for hotspot, xy in virtualViewport._hotspots:
-            virtualViewport.remove_hotspot(hotspot, xy)
+        for vhotspot, xy in virtualViewport._hotspots:
+            virtualViewport.remove_hotspot(vhotspot, xy)
 
     virtualViewport.add_hotspot(rowOne, (0, 0))
     virtualViewport.add_hotspot(rowTwo, (0, 12))
@@ -199,33 +199,33 @@ def drawSignage(device, width, height, data):
         pw, ph = draw.textsize("Plat 88", font)
 
     rowOneA = snapshot(
-        width - w - pw - 5, 10, renderDestination(departures[0], fontBold), interval=10)
+        width - w - pw - 5, 10, renderDestination(departures[0], fontBold), interval=config["refreshTime"])
     rowOneB = snapshot(w, 10, renderServiceStatus(
         departures[0]), interval=10)
-    rowOneC = snapshot(pw, 10, renderPlatform(departures[0]), interval=10)
-    rowTwoA = snapshot(callingWidth, 10, renderCallingAt, interval=100)
+    rowOneC = snapshot(pw, 10, renderPlatform(departures[0]), interval=config["refreshTime"])
+    rowTwoA = snapshot(callingWidth, 10, renderCallingAt, interval=config["refreshTime"])
     rowTwoB = snapshot(width - callingWidth, 10,
-                       renderStations(", ".join(firstDepartureDestinations)), interval=0.2)
+                       renderStations(", ".join(firstDepartureDestinations)), interval=0.1)
 
     if(len(departures) > 1):
         rowThreeA = snapshot(width - w - pw, 10, renderDestination(
-            departures[1], font), interval=10)
+            departures[1], font), interval=config["refreshTime"])
         rowThreeB = snapshot(w, 10, renderServiceStatus(
-            departures[1]), interval=10)
-        rowThreeC = snapshot(pw, 10, renderPlatform(departures[1]), interval=10)
+            departures[1]), interval=config["refreshTime"])
+        rowThreeC = snapshot(pw, 10, renderPlatform(departures[1]), interval=config["refreshTime"])
 
     if(len(departures) > 2):
         rowFourA = snapshot(width - w - pw, 10, renderDestination(
             departures[2], font), interval=10)
         rowFourB = snapshot(w, 10, renderServiceStatus(
             departures[2]), interval=10)
-        rowFourC = snapshot(pw, 10, renderPlatform(departures[2]), interval=10)
+        rowFourC = snapshot(pw, 10, renderPlatform(departures[2]), interval=config["refreshTime"])
 
-    rowTime = snapshot(width, 14, renderTime, interval=0.1)
+    rowTime = hotspot(width, 14, renderTime)
 
     if len(virtualViewport._hotspots) > 0:
-        for hotspot, xy in virtualViewport._hotspots:
-            virtualViewport.remove_hotspot(hotspot, xy)
+        for vhotspot, xy in virtualViewport._hotspots:
+            virtualViewport.remove_hotspot(vhotspot, xy)
 
     stationRenderCount = 0
     pauseCount = 0
@@ -252,6 +252,9 @@ def drawSignage(device, width, height, data):
 
 
 try:
+    version_file = open('VERSION', 'r')
+
+    print('Starting Train Departure Display v' + version_file.read())
     config = loadConfig()
 
     serial = spi()
@@ -268,7 +271,7 @@ try:
     pauseCount = 0
     loop_count = 0
 
-    regulator = framerate_regulator(fps=0)
+    regulator = framerate_regulator(20)
 
     data = loadData(config["transportApi"], config["journey"])
     if data[0] == False:
@@ -284,18 +287,20 @@ try:
     while True:
         with regulator:
             if(timeNow - timeAtStart >= config["refreshTime"]):
+                print('Updating Data')
+                print('Effective FPS: ' + str(round(regulator.effective_FPS(),2)))
                 data = loadData(config["transportApi"], config["journey"])
                 if data[0] == False:
                     virtual = drawBlankSignage(
                         device, width=widgetWidth, height=widgetHeight, departureStation=data[2])
                 else:
                     virtual = drawSignage(device, width=widgetWidth,
-                                          height=widgetHeight, data=data)
+                                            height=widgetHeight, data=data)
 
                 timeAtStart = time.time()
 
-            timeNow = time.time()
-            virtual.refresh()
+        timeNow = time.time()
+        virtual.refresh()
 
 except KeyboardInterrupt:
     pass
