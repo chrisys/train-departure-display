@@ -1,4 +1,4 @@
-# Balena UK Train Departure Display (next train indicator)
+# UK Train Departure Display (next train indicator)
 
 ![](assets/blog-header.jpg)
 ![](assets/desk-setup.jpg)
@@ -14,11 +14,11 @@ A set of python scripts to display replica near real-time UK railway station dep
 
 Running this project is as simple as deploying it to a balenaCloud application. You can do it in just a few clicks by using the button below:
 
-[![balena deploy button](https://balena.io/deploy.png)](https://dashboard.balena-cloud.com/deploy?repoUrl=https://github.com/balenalabs/uk-train-departure-display&defaultDeviceType=raspberry-pi)
+[![balena deploy button](https://balena.io/deploy.svg)](https://dashboard.balena-cloud.com/deploy?repoUrl=https://github.com/balenalabs/uk-train-departure-display&defaultDeviceType=raspberry-pi)
 
 Alternatively, sign up, add an application and device as per the [getting started](https://www.balena.io/docs/learn/getting-started/raspberrypi3/python/) guide. Then use the [balena CLI](https://github.com/balena-io/balena-cli) to push the project to your Pi.
 
-This allows you to easily deploy multiple devices and configure them from the dashboard with the following variables which will then automatically generate the `config.json` file required.
+This allows you to easily deploy multiple devices and configure them from the dashboard with the following variables.
 
 **There is also [a full writeup on the balena blog](https://www.balena.io/blog/build-a-raspberry-pi-powered-train-station-oled-sign-for-your-desk/).**
 
@@ -44,9 +44,9 @@ These environment variables are specified using the [balenaCloud dashboard](http
 
 ## Hardware
 
-This project (without modification) requires the use of a SSD1322-based 256x64 SPI display, an OLED in yellow for the authentic look. I have used [displays from AliExpress](https://www.aliexpress.com/item/32988174566.html) successfully.
+This project (without modification) requires the use of a SSD1322-based 256x64 SPI display, an OLED in yellow for the authentic look. I have used [displays from AliExpress](https://www.aliexpress.com/item/32988174566.html) successfully. 
 
-The connections for one of these displays to the Raspberry Pi GPIO header are as follows, but **it would be a good idea to check the connections with the datasheet of your particilar display before powering on** as there's no guarantee yours will match the pinout of mine.
+The connections for one of these displays to the Raspberry Pi GPIO header are as follows, but **it would be a good idea to check the connections with the datasheet of your particular display before powering on** as there's no guarantee yours will match the pinout of mine.
 
 | Display | Connection | Raspberry Pi
 |---|---|---
@@ -59,6 +59,8 @@ The connections for one of these displays to the Raspberry Pi GPIO header are as
 | 16 | `CS` (chip select) | 24 (`BCM8 CE0`)
 
 ![](assets/pi-display-connections_bb.png)
+
+**Important note, if your display isn't working check this first!:** Some displays have a solder-blob or zero-ohm resistor jumper on the back of the board that you may need to move in order to enable the display for SPI communication. If you don't get any output, check this first! In the case of my display it meant moving `R6` to `R5` to enable 4SPI as dictated by a small data table printed on the back of the display board.
 
 ## Case
 
