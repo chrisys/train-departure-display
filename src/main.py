@@ -18,6 +18,8 @@ from luma.oled.device import ssd1322
 from luma.core.virtual import viewport, snapshot, hotspot
 from luma.core.sprite_system import framerate_regulator
 
+from luma.emulator.device import pygame as emulator
+
 def makeFont(name, size):
     font_path = os.path.abspath(
         os.path.join(
@@ -258,16 +260,24 @@ try:
     print('Starting Train Departure Display v' + version_file.read())
     config = loadConfig()
 
-    serial = spi()
-    device = ssd1322(serial, mode="1", rotate=2)
+    device = None
+    widgetWidth = 256 
+    widgetHeight = 64 
+
+    if config["display"] == "SSD1322":
+        serial = spi()
+        device = ssd1322(serial, mode="1", rotate=2)
+    elif config["display"] == "MONITOR":
+        device = emulator(width=widgetWidth, height=widgetHeight,frame_rate=20)
+        device._pygame.mouse.set_visible(False)
+
+    if device == None:
+        sys.exit(1)
     font = makeFont("Dot Matrix Regular.ttf", 10)
     fontBold = makeFont("Dot Matrix Bold.ttf", 10)
     fontBoldTall = makeFont("Dot Matrix Bold Tall.ttf", 10)
     fontBoldLarge = makeFont("Dot Matrix Bold.ttf", 20)
-
-    widgetWidth = 256
-    widgetHeight = 64
-
+  
     stationRenderCount = 0
     pauseCount = 0
     loop_count = 0
@@ -308,3 +318,6 @@ except ValueError as err:
     print(f"Error: {err}")
 except KeyError as err:
     print(f"Error: Please ensure the {err} environment variable is set")
+except:
+    print('Unexpected Error')
+

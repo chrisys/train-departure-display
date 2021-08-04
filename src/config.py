@@ -7,6 +7,7 @@ def loadConfig():
     }
 
     data["refreshTime"] = int(os.getenv("refreshTime") or 180)
+    data["display"] = os.getenv("DISPLAY_DEVICE") or "SSD1322"
 
     data["journey"]["departureStation"] = os.getenv("departureStation") or "PAD"
     data["journey"]["destinationStation"] = os.getenv("destinationStation") or None

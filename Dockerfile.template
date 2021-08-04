@@ -2,30 +2,45 @@ FROM balenalib/%%BALENA_MACHINE_NAME%%-debian-python:3.7-buster-run AS builder
 
 WORKDIR /usr/src/app
 
-RUN mkdir -p /usr/src/debian-rootfs
+# make folder readable by other users -> _apt can access some deb files otherwise
+RUN chmod 777 /usr/src/app
 
-RUN install_packages apt-rdepends
+RUN mkdir -p /usr/src/debian-rootfs 
 
-RUN apt-get update && \
-        apt-get download \
-        $(apt-rdepends python3 libopenjp2-7 libfreetype6-dev libjpeg-dev libtiff5 libxcb1 | grep -v "^ " | sed 's/debconf-2.0/debconf/g' | sed 's/^libc-dev$/libc6-dev/g' | sed 's/^libz-dev$/zlib1g-dev/g')
+RUN install_packages build-essential
 
+# list of packages to be installed in rootfs we will use in next stage
+ARG PACKAGES="tzdata python3 python3-pygame libopenjp2-7 libfreetype6-dev libjpeg-dev libtiff5 libxcb1"
+
+# download all packages and dependencies
+RUN apt update && apt-get download $(apt-cache depends --recurse --no-recommends --no-suggests --no-conflicts --no-breaks --no-replaces --no-enhances ${PACKAGES} | grep "^\w" | sort -u)
+
+# install packages to separate rootfs
 RUN for pkg in *.deb; \
       do dpkg-deb  -x $pkg /usr/src/debian-rootfs; \
       done
 
 COPY ./requirements.txt .
-RUN pip install -t /usr/src/python-packages -r requirements.txt --no-cache-dir --extra-index-url=https://www.piwheels.org/simple
+
+RUN pip install -t /usr/src/python-packages -r requirements.txt --extra-index-url=https://www.piwheels.org/simple
+
+# download luma.emulator separately without pygame(installed from debian source) -> if same directory, pip throws err: Target directory exists
+RUN pip install -t /usr/src/luma-emulator luma.emulator --no-deps --ignore-installed --no-cache-dir --extra-index-url=https://www.piwheels.org/simple
+
+RUN cp -rf /usr/src/luma-emulator/luma/emulator /usr/src/python-packages/luma
+
 
 
 FROM busybox:stable
 
-
 COPY --from=builder /usr/src/debian-rootfs ./
-COPY --from=builder /usr/src/python-packages/ /usr/src/python-packages/
+
+COPY --from=builder /usr/src/python-packages/ /usr/src/python-packages
 
 COPY src ./src
+
 COPY VERSION ./
 
 ENV PYTHONPATH=/usr/src/python-packages/
+
 CMD ["python3", "src/main.py"]

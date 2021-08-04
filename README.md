@@ -41,6 +41,7 @@ These environment variables are specified using the [balenaCloud dashboard](http
 |`transportApi_apiKey` | `798c7ddfdeadbeef87987e9a8e79` (transport API key)
 |`transportApi_appId` | `12345678` (transport API application ID)
 |`transportApi_operatingHours` | `8-22` (hours during which the data will refresh at the interval above)
+|`DISPLAY_DEVICE` | `SSD1322`(default) or `MONITOR`
 
 ## Hardware
 
