@@ -12,11 +12,11 @@ A set of python scripts to display replica near real-time UK railway station dep
 
 ## Installation
 
-Running this project is as simple as deploying it to a balenaCloud application. You can do it in just a few clicks by using the button below:
+Running this project is as simple as deploying it to a balenaCloud fleet. You can do it in just a few clicks by using the button below:
 
 [![balena deploy button](https://balena.io/deploy.svg)](https://dashboard.balena-cloud.com/deploy?repoUrl=https://github.com/balenalabs/uk-train-departure-display&defaultDeviceType=raspberry-pi)
 
-Alternatively, sign up, add an application and device as per the [getting started](https://www.balena.io/docs/learn/getting-started/raspberrypi3/python/) guide. Then use the [balena CLI](https://github.com/balena-io/balena-cli) to push the project to your Pi.
+Alternatively, sign up, add a fleet and device as per the [getting started](https://www.balena.io/docs/learn/getting-started/raspberrypi3/python/) guide. Then use the [balena CLI](https://github.com/balena-io/balena-cli) to push the project to your Pi.
 
 This allows you to easily deploy multiple devices and configure them from the dashboard with the following variables.
 
@@ -27,7 +27,7 @@ This allows you to easily deploy multiple devices and configure them from the da
 
 Sign up for the [Transport API](https://www.transportapi.com/), and generate an app ID and API key (note the free tier has a limit of 1000 requests a day).
 
-These environment variables are specified using the [balenaCloud dashboard](https://www.balena.io/docs/learn/manage/serv-vars/), allowing you to set up mutiple signs in one application for different stations.
+These environment variables are specified using the [balenaCloud dashboard](https://www.balena.io/docs/learn/manage/serv-vars/), allowing you to set up mutiple signs in one fleet for different stations.
 
 
 | Key                              | Example Value
