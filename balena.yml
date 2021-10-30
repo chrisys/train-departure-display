@@ -24,7 +24,6 @@ data:
     - departureStation: PAD
     - outOfHoursName: London Paddington
     - refreshTime: 120
-    - transportApi_apiKey: UPDATE_ME
-    - transportApi_appId: UPDATE_ME
-    - transportApi_operatingHours: 8-22
-version: 0.0.15
+    - apiKey: UPDATE_ME
+    - operatingHours: 8-22
+version: 0.1.0
