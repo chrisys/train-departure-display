@@ -24,8 +24,9 @@ FROM busybox:stable
 COPY --from=builder /usr/src/debian-rootfs ./
 COPY --from=builder /usr/src/python-packages/ /usr/src/python-packages/
 
-COPY src ./src
 COPY VERSION ./
 
+COPY src ./src
 ENV PYTHONPATH=/usr/src/python-packages/
+
 CMD ["python3", "src/main.py"]

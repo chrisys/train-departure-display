@@ -3,7 +3,7 @@
 ![](assets/blog-header.jpg)
 ![](assets/desk-setup.jpg)
 
-A set of python scripts to display replica near real-time UK railway station departure data on SSD1322-based 256x64 SPI OLED screens. Uses the publicly available [Transport API](https://www.transportapi.com/). This project has been developed and simplified based on the work of [others](#credits) to run on the [balenaCloud](https://balena.io/cloud) platform.
+A set of python scripts to display replica near real-time UK railway station departure data on SSD1322-based 256x64 SPI OLED screens. Uses the publicly available [OpenLDBWS API by National Rail Enquiries](https://www.nationalrail.co.uk/). This project has been developed and simplified based on the work of [others](#credits) to run on the [balenaCloud](https://balena.io/cloud) platform.
 
    * [Installation](#installation)
    * [Configuration](#configuration)
@@ -25,7 +25,7 @@ This allows you to easily deploy multiple devices and configure them from the da
 
 ## Configuration
 
-Sign up for the [Transport API](https://www.transportapi.com/), and generate an app ID and API key (note the free tier has a limit of 1000 requests a day).
+Sign up for the [National Rail Enquiries OpenLDBWS API](http://realtime.nationalrail.co.uk/OpenLDBWSRegistration), which will generate an token for you to use as the API key.
 
 These environment variables are specified using the [balenaCloud dashboard](https://www.balena.io/docs/learn/manage/serv-vars/), allowing you to set up mutiple signs in one fleet for different stations.
 
@@ -36,11 +36,12 @@ These environment variables are specified using the [balenaCloud dashboard](http
 |`departureStation`  | `PAD` ([station code](https://www.nationalrail.co.uk/stations_destinations/48541.aspx))
 |`destinationStation`  | `HWV` ([station code](https://www.nationalrail.co.uk/stations_destinations/48541.aspx)) [optional] Filters trains shown to only those that call at this station
 |`departurePlatform` | `7` (filter departures shown to only those departing from this platform)
+|`timeOffset`  | `5` [optional] (Time offset, in minutes, for the departure board. Can be used to see into the future (positive value) or past (negative value). Set 5 if you live 5 min from the station and want to hide departures that are too soon to catch)
 | `outOfHoursName` | `London Paddington` (name shown when current time is outside the `transportApi_operatingHours`)
 |`refreshTime` | `120` (seconds between data refresh)
-|`transportApi_apiKey` | `798c7ddfdeadbeef87987e9a8e79` (transport API key)
-|`transportApi_appId` | `12345678` (transport API application ID)
-|`transportApi_operatingHours` | `8-22` (hours during which the data will refresh at the interval above)
+|`screenRotation` | `2` (rotates the output of the OLED)
+|`apiKey` | `f1ff949c-7693-49b3-8242-e3354fe91b94` (OpenLDBWS API key)
+|`operatingHours` | `8-22` (hours during which the data will refresh at the interval above)
 
 ## Hardware
 
@@ -71,3 +72,5 @@ There are .stl 3D models for a case available in the assets directory.
 A big thanks to [Chris Hutchinson](https://github.com/chrishutchinson/) who originally started this project and inspired me to develop it further. [Blake](https://github.com/ghostseven) made some further improvements and this project was forked from [there](https://github.com/ghostseven/UK-Train-Departure-Display).
 
 The fonts used were painstakingly put together by `DanielHartUK` and can be found on GitHub at https://github.com/DanielHartUK/Dot-Matrix-Typeface - A huge thanks for making that resource available!
+
+Thanks to [@jajasilver](https://github.com/jajsilver/UK-Train-Departure-Display-NRE) and [@MatthewAscough](https://github.com/MatthewAscough/UK-Train-Departure-Display-NRE) for forming the basis of the OpenLDBWS implementation.

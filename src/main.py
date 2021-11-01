@@ -8,7 +8,7 @@ from timeloop import Timeloop
 from datetime import datetime
 from PIL import ImageFont, Image
 
-from trains import loadDeparturesForStation, loadDestinationsForDeparture
+from trains import loadDeparturesForStation
 from config import loadConfig
 from open import isRun
 
@@ -44,8 +44,12 @@ def renderServiceStatus(departure):
     def drawText(draw, width, height):
         train = ""
 
-        if departure["status"] == "CANCELLED":
+        if departure["expected_departure_time"] == "On time":
+            train = "On time"
+        elif departure["expected_departure_time"] == "Cancelled":
             train = "Cancelled"
+        elif departure["expected_departure_time"] == "Delayed":
+            train = "Delayed"
         else:
             if isinstance(departure["expected_departure_time"], str):
                 train = 'Exp '+departure["expected_departure_time"]
@@ -60,10 +64,10 @@ def renderServiceStatus(departure):
 
 def renderPlatform(departure):
     def drawText(draw, width, height):
-        if departure["mode"] == "bus":
-            draw.text((0, 0), text="BUS", font=font, fill="yellow")
-        else:
-            if isinstance(departure["platform"], str):
+        if "platform" in departure:
+            if (departure["platform"].lower() == "bus"):
+                draw.text((0, 0), text="BUS", font=font, fill="yellow")
+            else:
                 draw.text((0, 0), text="Plat "+departure["platform"], font=font, fill="yellow")
     return drawText
 
@@ -112,6 +116,20 @@ def renderWelcomeTo(xOffset):
 
     return drawText
 
+def renderPoweredBy(xOffset):
+    def drawText(draw, width, height):
+        text = "Powered by"
+        draw.text((int(xOffset), 0), text=text, font=fontBold, fill="yellow")
+
+    return drawText
+
+def renderNRE(xOffset):
+    def drawText(draw, width, height):
+        text = "National Rail Enquiries"
+        draw.text((int(xOffset), 0), text=text, font=fontBold, fill="yellow")
+
+    return drawText
+
 
 def renderDepartureStation(departureStation, xOffset):
     def draw(draw, width, height):
@@ -131,18 +149,37 @@ def loadData(apiConfig, journeyConfig):
     if isRun(runHours[0], runHours[1]) == False:
         return False, False, journeyConfig['outOfHoursName']
 
-    print('Updating Data')
     departures, stationName = loadDeparturesForStation(
-        journeyConfig, apiConfig["appId"], apiConfig["apiKey"])
+        journeyConfig, apiConfig["apiKey"])
 
-    if len(departures) == 0:
+    if (departures == None):
         return False, False, stationName
 
-    firstDepartureDestinations = loadDestinationsForDeparture(
-        journeyConfig, departures[0]["service_timetable"]["id"])
-
+    firstDepartureDestinations = departures[0]["calling_at_list"]
     return departures, firstDepartureDestinations, stationName
 
+def drawNRE(device, width, height):
+    device.clear()
+
+    virtualViewport = viewport(device, width=width, height=height)
+
+    with canvas(device) as draw:
+        poweredSize = draw.textsize("Powered by", fontBold)
+        NRESize = draw.textsize("National Rail Enquiries", fontBold)
+        rowOne = snapshot(width, 10, renderPoweredBy((width - poweredSize[0]) / 2), interval=10)
+        rowTwo = snapshot(width, 10, renderNRE((width - NRESize[0]) / 2), interval=10)
+        rowTime = snapshot(width, 14, renderTime, interval=1)
+
+        if len(virtualViewport._hotspots) > 0:
+            for hotspot, xy in virtualViewport._hotspots:
+                virtualViewport.remove_hotspot(hotspot, xy)
+
+        virtualViewport.add_hotspot(rowOne, (0, 0))
+        virtualViewport.add_hotspot(rowTwo, (0, 12))
+        virtualViewport.add_hotspot(rowTime, (0, 50))
+
+
+    return virtualViewport
 
 def drawBlankSignage(device, width, height, departureStation):
     global stationRenderCount, pauseCount
@@ -206,7 +243,7 @@ def drawSignage(device, width, height, data):
     rowOneC = snapshot(pw, 10, renderPlatform(departures[0]), interval=config["refreshTime"])
     rowTwoA = snapshot(callingWidth, 10, renderCallingAt, interval=config["refreshTime"])
     rowTwoB = snapshot(width - callingWidth, 10,
-                       renderStations(", ".join(firstDepartureDestinations)), interval=0.1)
+                       renderStations(firstDepartureDestinations), interval=0.1)
 
     if(len(departures) > 1):
         rowThreeA = snapshot(width - w - pw, 10, renderDestination(
@@ -259,7 +296,7 @@ try:
     config = loadConfig()
 
     serial = spi()
-    device = ssd1322(serial, mode="1", rotate=2)
+    device = ssd1322(serial, mode="1", rotate=config['screenRotation'])
     font = makeFont("Dot Matrix Regular.ttf", 10)
     fontBold = makeFont("Dot Matrix Bold.ttf", 10)
     fontBoldTall = makeFont("Dot Matrix Bold Tall.ttf", 10)
@@ -274,7 +311,7 @@ try:
 
     regulator = framerate_regulator(20)
 
-    data = loadData(config["transportApi"], config["journey"])
+    data = loadData(config["api"], config["journey"])
     if data[0] == False:
         virtual = drawBlankSignage(
             device, width=widgetWidth, height=widgetHeight, departureStation=data[2])
@@ -288,8 +325,12 @@ try:
     while True:
         with regulator:
             if(timeNow - timeAtStart >= config["refreshTime"]):
+                # display NRE attribution while data loads
+                virtual = drawNRE(device, width=widgetWidth, height=widgetHeight)
+                virtual.refresh()
+
                 print('Effective FPS: ' + str(round(regulator.effective_FPS(),2)))
-                data = loadData(config["transportApi"], config["journey"])
+                data = loadData(config["api"], config["journey"])
                 if data[0] == False:
                     virtual = drawBlankSignage(
                         device, width=widgetWidth, height=widgetHeight, departureStation=data[2])
@@ -306,5 +347,5 @@ except KeyboardInterrupt:
     pass
 except ValueError as err:
     print(f"Error: {err}")
-except KeyError as err:
-    print(f"Error: Please ensure the {err} environment variable is set")
+# except KeyError as err:
+#     print(f"Error: Please ensure the {err} environment variable is set")
