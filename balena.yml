@@ -26,4 +26,5 @@ data:
     - refreshTime: 120
     - apiKey: UPDATE_ME
     - operatingHours: 8-22
-version: 0.1.0
+    - screenBlankHours: 1-6
+version: 0.1.1
