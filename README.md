@@ -37,11 +37,12 @@ These environment variables are specified using the [balenaCloud dashboard](http
 |`destinationStation`  | `HWV` ([station code](https://www.nationalrail.co.uk/stations_destinations/48541.aspx)) [optional] Filters trains shown to only those that call at this station
 |`departurePlatform` | `7` (filter departures shown to only those departing from this platform)
 |`timeOffset`  | `5` [optional] (Time offset, in minutes, for the departure board. Can be used to see into the future (positive value) or past (negative value). Set 5 if you live 5 min from the station and want to hide departures that are too soon to catch)
-| `outOfHoursName` | `London Paddington` (name shown when current time is outside the `transportApi_operatingHours`)
 |`refreshTime` | `120` (seconds between data refresh)
 |`screenRotation` | `2` (rotates the output of the OLED)
-|`apiKey` | `f1ff949c-7693-49b3-8242-e3354fe91b94` (OpenLDBWS API key)
+|`apiKey` | `f1ff949c-769e-49b3-8242-eee54fe91b94` (OpenLDBWS API key)
 |`operatingHours` | `8-22` (hours during which the data will refresh at the interval above)
+|`screenBlankHours` | `1-6` (hours during which the screen will be blank and data will not refresh)
+| `outOfHoursName` | `London Paddington` (name shown when current time is outside the `operatingHours`)
 
 ## Hardware
 

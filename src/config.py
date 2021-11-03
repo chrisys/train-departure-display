@@ -8,6 +8,7 @@ def loadConfig():
 
     data["refreshTime"] = int(os.getenv("refreshTime") or 180)
     data["screenRotation"] = int(os.getenv("screenRotation") or 2)
+    data["screenBlankHours"] = os.getenv("screenBlankHours") or "1-6"
 
     data["journey"]["departureStation"] = os.getenv("departureStation") or "PAD"
     data["journey"]["destinationStation"] = os.getenv("destinationStation") or ""
@@ -17,6 +18,6 @@ def loadConfig():
     data["journey"]['timeOffset'] = os.getenv("screenRotation") or "0"
 
     data["api"]["apiKey"] = os.getenv("apiKey") or None
-    data["api"]["operatingHours"] = os.getenv("operatingHours") or "0-23"
+    data["api"]["operatingHours"] = os.getenv("operatingHours") or "8-22"
 
     return data

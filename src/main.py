@@ -130,6 +130,12 @@ def renderNRE(xOffset):
 
     return drawText
 
+def renderName(xOffset):
+    def drawText(draw, width, height):
+        text = "UK Train Departure Display"
+        draw.text((int(xOffset), 0), text=text, font=fontBold, fill="yellow")
+
+    return drawText
 
 def renderDepartureStation(departureStation, xOffset):
     def draw(draw, width, height):
@@ -158,26 +164,25 @@ def loadData(apiConfig, journeyConfig):
     firstDepartureDestinations = departures[0]["calling_at_list"]
     return departures, firstDepartureDestinations, stationName
 
-def drawNRE(device, width, height):
-    device.clear()
-
+def drawStartup(device, width, height):
     virtualViewport = viewport(device, width=width, height=height)
 
     with canvas(device) as draw:
+        nameSize = draw.textsize("UK Train Departure Display", fontBold)
         poweredSize = draw.textsize("Powered by", fontBold)
         NRESize = draw.textsize("National Rail Enquiries", fontBold)
-        rowOne = snapshot(width, 10, renderPoweredBy((width - poweredSize[0]) / 2), interval=10)
-        rowTwo = snapshot(width, 10, renderNRE((width - NRESize[0]) / 2), interval=10)
-        rowTime = snapshot(width, 14, renderTime, interval=1)
+
+        rowOne = snapshot(width, 10, renderName((width - nameSize[0]) / 2), interval=10)
+        rowThree = snapshot(width, 10, renderPoweredBy((width - poweredSize[0]) / 2), interval=10)
+        rowFour = snapshot(width, 10, renderNRE((width - NRESize[0]) / 2), interval=10)
 
         if len(virtualViewport._hotspots) > 0:
             for hotspot, xy in virtualViewport._hotspots:
                 virtualViewport.remove_hotspot(hotspot, xy)
 
         virtualViewport.add_hotspot(rowOne, (0, 0))
-        virtualViewport.add_hotspot(rowTwo, (0, 12))
-        virtualViewport.add_hotspot(rowTime, (0, 50))
-
+        virtualViewport.add_hotspot(rowThree, (0, 24))
+        virtualViewport.add_hotspot(rowFour, (0, 36))
 
     return virtualViewport
 
@@ -215,8 +220,6 @@ def drawBlankSignage(device, width, height, departureStation):
 
 def drawSignage(device, width, height, data):
     global stationRenderCount, pauseCount
-
-    device.clear()
 
     virtualViewport = viewport(device, width=width, height=height)
 
@@ -311,37 +314,37 @@ try:
 
     regulator = framerate_regulator(20)
 
-    data = loadData(config["api"], config["journey"])
-    if data[0] == False:
-        virtual = drawBlankSignage(
-            device, width=widgetWidth, height=widgetHeight, departureStation=data[2])
-    else:
-        virtual = drawSignage(device, width=widgetWidth,
-                              height=widgetHeight, data=data)
+    # display NRE attribution while data loads
+    virtual = drawStartup(device, width=widgetWidth, height=widgetHeight)
+    virtual.refresh()
+    time.sleep(5)
 
-    timeAtStart = time.time()
+    timeAtStart = time.time()-config["refreshTime"]
     timeNow = time.time()
+
+    blankHours = [int(x) for x in config['screenBlankHours'].split('-')]
 
     while True:
         with regulator:
-            if(timeNow - timeAtStart >= config["refreshTime"]):
-                # display NRE attribution while data loads
-                virtual = drawNRE(device, width=widgetWidth, height=widgetHeight)
+            if isRun(blankHours[0], blankHours[1]) == True:
+                device.clear()
+                time.sleep(10)
+            else:
+                if(timeNow - timeAtStart >= config["refreshTime"]):
+
+                    print('Effective FPS: ' + str(round(regulator.effective_FPS(),2)))
+                    data = loadData(config["api"], config["journey"])
+                    if data[0] == False:
+                        virtual = drawBlankSignage(
+                            device, width=widgetWidth, height=widgetHeight, departureStation=data[2])
+                    else:
+                        virtual = drawSignage(device, width=widgetWidth,
+                                                height=widgetHeight, data=data)
+
+                    timeAtStart = time.time()
+
+                timeNow = time.time()
                 virtual.refresh()
-
-                print('Effective FPS: ' + str(round(regulator.effective_FPS(),2)))
-                data = loadData(config["api"], config["journey"])
-                if data[0] == False:
-                    virtual = drawBlankSignage(
-                        device, width=widgetWidth, height=widgetHeight, departureStation=data[2])
-                else:
-                    virtual = drawSignage(device, width=widgetWidth,
-                                            height=widgetHeight, data=data)
-
-                timeAtStart = time.time()
-
-        timeNow = time.time()
-        virtual.refresh()
 
 except KeyboardInterrupt:
     pass
