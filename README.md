@@ -3,7 +3,7 @@
 ![](assets/blog-header.jpg)
 ![](assets/desk-setup.jpg)
 
-A set of python scripts to display replica near real-time UK railway station departure data on SSD1322-based 256x64 SPI OLED screens. Uses the publicly available [OpenLDBWS API by National Rail Enquiries](https://www.nationalrail.co.uk/). This project has been developed and simplified based on the work of [others](#credits) to run on the [balenaCloud](https://balena.io/cloud) platform.
+A set of python scripts to display replica near real-time UK railway station departure data on one or two SSD1322-based 256x64 SPI OLED screens. Uses the publicly available [OpenLDBWS API by National Rail Enquiries](https://www.nationalrail.co.uk/). This project has been developed and simplified based on the work of [others](#credits) to run on the [balenaCloud](https://balena.io/cloud) platform.
 
    * [Installation](#installation)
    * [Configuration](#configuration)
@@ -43,6 +43,18 @@ These environment variables are specified using the [balenaCloud dashboard](http
 |`operatingHours` | `8-22` (hours during which the data will refresh at the interval above)
 |`screenBlankHours` | `1-6` (hours during which the screen will be blank and data will not refresh)
 | `outOfHoursName` | `London Paddington` (name shown when current time is outside the `operatingHours`)
+| `dualScreen` | `True` (if you are using two displays)
+| `screenPlatform1` | `1` (sets the platform you want to have displayed on the first display)
+| `screenPlatform2` | `2` (sets the platform you want to have displayed on the second display)
+
+
+If using multi screen the following line needs to be added into /boot/config.txt
+
+```
+dtoverlay=spi1-3cs
+```
+
+This can be achieved by using the [Advanced boot settings](https://www.balena.io/docs/reference/OS/advanced/) specified from the device configuration screen in the balenaCloud dashboard.
 
 ## Hardware
 
@@ -59,6 +71,16 @@ The connections for one of these displays to the Raspberry Pi GPIO header are as
 | 14 | `DC` (data/command select) | 18 (`BCM24`) |
 | 15 | `RST` (reset) | 22 (`BCM25`) |
 | 16 | `CS` (chip select) | 24 (`BCM8 CE0`)
+
+| Second Display | Connection | Raspberry Pi
+|---|---|---
+| 1 | Ground | 25 (Ground) |
+| 2 | V+ (3.3V) | 17 (3v3 Power) |
+| 4 | `D0/SCLK` | 40 (`BCM21 SCLK`) |
+| 5 | `D1/SDIN` | 38 (`BCM20 MOSI`) |
+| 14 | `DC` (data/command select) | 29 (`BCM5`) |
+| 15 | `RST` (reset) | 31 (`BCM6`) |
+| 16 | `CS` (chip select) | 12 (`BCM18 CE0`)
 
 ![](assets/pi-display-connections_bb.png)
 
