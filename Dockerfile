@@ -1,4 +1,4 @@
-FROM balenalib/%%BALENA_MACHINE_NAME%%-debian-python:3.7-buster-run AS builder
+FROM balenalib/raspberry-pi-debian-python:3.7-buster-run AS builder
 
 WORKDIR /usr/src/app
 

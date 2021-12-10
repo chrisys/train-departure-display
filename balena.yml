@@ -18,6 +18,7 @@ data:
   defaultDeviceType: raspberry-pi
   supportedDeviceTypes:
     - raspberry-pi
+    - raspberrypi0-2w-64
     - raspberrypi3
   applicationEnvironmentVariables:
     - TZ: Europe/London
@@ -27,4 +28,4 @@ data:
     - apiKey: UPDATE_ME
     - operatingHours: 8-22
     - screenBlankHours: 1-6
-version: 0.1.2
+version: 0.1.3
