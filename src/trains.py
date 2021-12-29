@@ -136,7 +136,7 @@ def ProcessDepartures(APIOut):
 
     return Departures, departureStationName
 
-def loadDeparturesForStation(journeyConfig, apiKey):
+def loadDeparturesForStation(journeyConfig, apiKey, rows):
     if journeyConfig["departureStation"] == "":
         raise ValueError(
             "Please configure the departureStation environment variable")
@@ -152,7 +152,7 @@ def loadDeparturesForStation(journeyConfig, apiKey):
         </x:Header>
         <x:Body>
             <ldb:GetDepBoardWithDetailsRequest>
-                <ldb:numRows>3</ldb:numRows>
+                <ldb:numRows>""" + rows + """</ldb:numRows>
                 <ldb:crs>""" + journeyConfig["departureStation"] + """</ldb:crs>
                 <ldb:timeOffset>""" + journeyConfig["timeOffset"] + """</ldb:timeOffset>
                 <ldb:filterCrs>""" + journeyConfig["destinationStation"] + """</ldb:filterCrs>

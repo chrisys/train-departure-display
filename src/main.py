@@ -73,7 +73,7 @@ def renderPlatform(departure):
 
 
 def renderCallingAt(draw, width, height):
-    stations = "Calling at:"
+    stations = "Calling at: "
     draw.text((0, 0), text=stations, font=font, fill="yellow")
 
 
@@ -150,13 +150,18 @@ def renderDots(draw, width, height):
     draw.text((0, 0), text=text, font=fontBold, fill="yellow")
 
 
-def loadData(apiConfig, journeyConfig):
+def loadData(apiConfig, journeyConfig, config):
     runHours = [int(x) for x in apiConfig['operatingHours'].split('-')]
     if isRun(runHours[0], runHours[1]) == False:
         return False, False, journeyConfig['outOfHoursName']
 
+    if config['dualScreen'] == True:
+        rows = "6"
+    else:
+        rows = "3"
+
     departures, stationName = loadDeparturesForStation(
-        journeyConfig, apiConfig["apiKey"])
+        journeyConfig, apiConfig["apiKey"], rows)
 
     if (departures == None):
         return False, False, stationName
@@ -217,6 +222,23 @@ def drawBlankSignage(device, width, height, departureStation):
 
     return virtualViewport
 
+def platform_filter(departureData, platformNumber, nextStations, station):
+    platformDepartures = []
+    for sub in departureData:
+        if platformNumber == "":
+            platformDepartures.append(sub)
+        elif sub.get('platform') is not None:
+            if sub['platform'] == platformNumber:
+                res = sub
+                platformDepartures.append(res)
+
+    if (len(platformDepartures) > 0):
+        firstDepartureDestinations = platformDepartures[0]["calling_at_list"]
+        platformData = platformDepartures, firstDepartureDestinations, station
+    else:
+        platformData = platformDepartures, "", station
+
+    return platformData
 
 def drawSignage(device, width, height, data):
     global stationRenderCount, pauseCount
@@ -224,7 +246,7 @@ def drawSignage(device, width, height, data):
     virtualViewport = viewport(device, width=width, height=height)
 
     status = "Exp 00:00"
-    callingAt = "Calling at:"
+    callingAt = "Calling at: "
 
     departures, firstDepartureDestinations, departureStation = data
 
@@ -238,6 +260,10 @@ def drawSignage(device, width, height, data):
     with canvas(device) as draw:
         w, h = draw.textsize(status, font)
         pw, ph = draw.textsize("Plat 88", font)
+
+    if(len(departures) == 0):
+        noTrains = drawBlankSignage(device, width=width, height=height, departureStation=departureStation)
+        return noTrains
 
     rowOneA = snapshot(
         width - w - pw - 5, 10, renderDestination(departures[0], fontBold), interval=config["refreshTime"])
@@ -298,8 +324,11 @@ try:
     print('Starting Train Departure Display v' + version_file.read())
     config = loadConfig()
 
-    serial = spi()
+    serial = spi(port=0)
     device = ssd1322(serial, mode="1", rotate=config['screenRotation'])
+    if config['dualScreen'] == True:
+        serial1 = spi(port=1,gpio_DC=5, gpio_RST=6)
+        device1 = ssd1322(serial1, mode="1", rotate=config['screenRotation'])
     font = makeFont("Dot Matrix Regular.ttf", 10)
     fontBold = makeFont("Dot Matrix Bold.ttf", 10)
     fontBoldTall = makeFont("Dot Matrix Bold Tall.ttf", 10)
@@ -317,6 +346,9 @@ try:
     # display NRE attribution while data loads
     virtual = drawStartup(device, width=widgetWidth, height=widgetHeight)
     virtual.refresh()
+    if config['dualScreen'] == True:
+        virtual = drawStartup(device1, width=widgetWidth, height=widgetHeight)
+        virtual.refresh()
     time.sleep(5)
 
     timeAtStart = time.time()-config["refreshTime"]
@@ -328,23 +360,37 @@ try:
         with regulator:
             if isRun(blankHours[0], blankHours[1]) == True:
                 device.clear()
+                if config['dualScreen'] == True:
+                    device1.clear()
                 time.sleep(10)
             else:
                 if(timeNow - timeAtStart >= config["refreshTime"]):
 
                     print('Effective FPS: ' + str(round(regulator.effective_FPS(),2)))
-                    data = loadData(config["api"], config["journey"])
+                    data = loadData(config["api"], config["journey"], config)
                     if data[0] == False:
                         virtual = drawBlankSignage(
                             device, width=widgetWidth, height=widgetHeight, departureStation=data[2])
+                        if config['dualScreen'] == True:
+                            virtual1 = drawBlankSignage(
+                                device1, width=widgetWidth, height=widgetHeight, departureStation=data[2])
                     else:
-                        virtual = drawSignage(device, width=widgetWidth,
-                                                height=widgetHeight, data=data)
+                        departureData = data[0]
+                        nextStations = data[1]
+                        station = data[2]
+                        screenData = platform_filter(departureData, config["journey"]["screen1Platform"], nextStations, station)
+                        virtual = drawSignage(device, width=widgetWidth,height=widgetHeight, data=screenData)
+                        
+                        if config['dualScreen'] == True:
+                            screen1Data = platform_filter(departureData, config["journey"]["screen2Platform"], nextStations, station)
+                            virtual1 = drawSignage(device1, width=widgetWidth,height=widgetHeight, data=screen1Data)
 
                     timeAtStart = time.time()
 
                 timeNow = time.time()
                 virtual.refresh()
+                if config['dualScreen'] == True:
+                    virtual1.refresh()
 
 except KeyboardInterrupt:
     pass
