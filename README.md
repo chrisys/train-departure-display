@@ -44,8 +44,8 @@ These environment variables are specified using the [balenaCloud dashboard](http
 |`screenBlankHours` | `1-6` (hours during which the screen will be blank and data will not refresh)
 | `outOfHoursName` | `London Paddington` (name shown when current time is outside the `operatingHours`)
 | `dualScreen` | `True` (if you are using two displays)
-| `screenPlatform1` | `1` (sets the platform you want to have displayed on the first display)
-| `screenPlatform2` | `2` (sets the platform you want to have displayed on the second display)
+| `screen1Platform` | `1` (sets the platform you want to have displayed on the first display)
+| `screen2Platform` | `2` (sets the platform you want to have displayed on the second display)
 
 
 If using multi screen the following line needs to be added into /boot/config.txt
