@@ -32,6 +32,8 @@ This allows you to easily deploy multiple devices and configure them from the da
 
 Sign up for the [National Rail Enquiries OpenLDBWS API](http://realtime.nationalrail.co.uk/OpenLDBWSRegistration), which will generate an token for you to use as the API key.
 
+**Note:** The API provider changed in v0.1.0 - if you are upgrading you'll need to create a new account with the link above and update the environment variables as per the table below.
+
 These environment variables are specified using the [balenaCloud dashboard](https://www.balena.io/docs/learn/manage/serv-vars/), allowing you to set up mutiple signs in one fleet for different stations.
 
 
