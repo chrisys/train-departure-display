@@ -10,16 +10,39 @@
 
 ![](assets/blog-header.jpg)
 
+   * [Parts required](#parts-required)
    * [Installation](#installation)
    * [Configuration](#configuration)
-   * [Hardware](#hardware)
+   * [Display connection](#display-connection)
    * [Credits](#credits)
+
+## Parts required
+
+![](assets/parts-required.jpg)
+
+   * 1x Raspberry Pi Zero 2 W (recommended) or Zero W
+   * 1x Micro SD card (recommend Sandisk Ultra 8GB or larger)
+   * 1x SSD1322-based 256x64 SPI display, OLED in yellow
+   * 1x 3D printed [case body](blob/main/case/case-body.stl)
+   * 1x 3D printed [back cover](blob/main/case/back-cover.stl)
+   * 2x 3D printed [display clamp](blob/main/case/display-clamp.stl)
+   * 1x 3D printed [desk mount](blob/main/case/desk-mount.stl) *OR* [hanging mount](blob/main/case/hanging-mount.stl)
+   * 4x M1.2x4mm self tapping screws to mount the display with the clamps
+   * 4x M1.7x5mm self tapping screws to fit the rear cover
+   * 1x Power cable (e.g. a USB cable that can be cut)
+   * Various small wires for connecting the Pi to the display
+
+I usually purchase screw sets [like this from Amazon](https://www.amazon.co.uk/gp/product/B0915DPHV2) which last a while.
+
+I have used [displays from AliExpress](https://www.aliexpress.com/item/32988174566.html) successfully, but any other with the same pixel dimensions and controller chip should also work.
+
+This project is designed to run using a Raspberry Pi Zero W or Zero 2 W and therefore the case is designed to fit that device. If you intend to create your own case or not use a case, other Raspberry Pi devices will also work.
 
 ## Installation
 
 Running this project is as simple as deploying it to a balenaCloud fleet. You can do it in just a few clicks by using the button below:
 
-[![balena deploy button](https://balena.io/deploy.svg)](https://dashboard.balena-cloud.com/deploy?repoUrl=https://github.com/balenalabs/uk-train-departure-display&defaultDeviceType=raspberry-pi)
+[![balena deploy button](https://balena.io/deploy.svg)](https://dashboard.balena-cloud.com/deploy?repoUrl=https://github.com/balenalabs/train-departure-display&defaultDeviceType=raspberry-pi)
 
 Alternatively, sign up, add a fleet and device as per the [getting started](https://www.balena.io/docs/learn/getting-started/raspberrypi3/python/) guide. Then use the [balena CLI](https://github.com/balena-io/balena-cli) to push the project to your Pi.
 
@@ -50,7 +73,7 @@ These environment variables are specified using the [balenaCloud dashboard](http
 |`screenBlankHours` | `1-6` (hours during which the screen will be blank and data will not refresh)
 | `outOfHoursName` | `London Paddington` (name shown when current time is outside the `operatingHours`)
 | `dualScreen` | `True` (if you are using two displays)
-| `screen1Platform` | `1` (sets the platform you want to have displayed on the first display)
+| `screen1Platform` | `1` (sets the platform you want to have displayed on the first or single-screen display)
 | `screen2Platform` | `2` (sets the platform you want to have displayed on the second display)
 
 
@@ -58,11 +81,9 @@ If using two screens the following line needs to be added into /boot/config.txt 
 
 ![](assets/overlays.png)
 
-## Hardware
+## Display connection
 
-This project requires the use of a SSD1322-based 256x64 SPI display, an OLED in yellow for the authentic look. I have used [displays from AliExpress](https://www.aliexpress.com/item/32988174566.html) successfully, but any other with the same pixel dimensions and controller chip should also work.
-
-The connections for one of these displays to the Raspberry Pi GPIO header are as follows, but **it would be a good idea to check the connections with the datasheet of your particular display before powering on** as there's no guarantee yours will match the pinout of mine.
+This project requires the use of one or two SSD1322-based 256x64 SPI displays, an OLED in yellow for the authentic look. The connections for one of these displays to the Raspberry Pi GPIO header are as follows, but **it would be a good idea to check the connections with the datasheet of your particular display before powering on** as there's no guarantee yours will match the pinout of mine.
 
 ### Display 1
 
@@ -95,21 +116,7 @@ The connections for one of these displays to the Raspberry Pi GPIO header are as
 
 ![](assets/desk-mount-rear.jpg)
 
-There are .stl 3D models for a case available in the case directory. Originally the case was a two-piece design which proved to be difficult to print. Feel free to look at the project history and retrieve the STL files if you want to give it a go, however a replacement is now available which is in multiple parts and easier to print successfully. It does require a few extra screws to hold it together, but this makes for a more robust assembly.
-
 ![](assets/case-assy.png)
-
-You'll need to print:
-- 1x case body
-- 1x back cover
-- 2x display clamp
-- 1x desk mount *OR* hanging mount
-
-For assembly you'll need:
-- 4x M1.2x4mm self tapping screws to mount the display with the clamps
-- 4x M1.7x5mm self tapping screws to fit the rear cover
-
-I usually purchase sets [like this from Amazon](https://www.amazon.co.uk/gp/product/B0915DPHV2) which last a while.
 
 For printing I recommend orientating the parts as below, noting that the hanging mount will require supports, although I also recommend blocking the supports from filling the holes - they can be tough to remove and should print OK without support.
 
