@@ -23,10 +23,10 @@
    * 1x Raspberry Pi Zero 2 W (recommended) or Zero W
    * 1x Micro SD card (recommend Sandisk Ultra 8GB or larger)
    * 1x SSD1322-based 256x64 SPI display, OLED in yellow
-   * 1x 3D printed [case body](blob/main/case/case-body.stl)
-   * 1x 3D printed [back cover](blob/main/case/back-cover.stl)
-   * 2x 3D printed [display clamp](blob/main/case/display-clamp.stl)
-   * 1x 3D printed [desk mount](blob/main/case/desk-mount.stl) *OR* [hanging mount](blob/main/case/hanging-mount.stl)
+   * 1x 3D printed [case body](case/case-body.stl)
+   * 1x 3D printed [back cover](case/back-cover.stl)
+   * 2x 3D printed [display clamp](case/display-clamp.stl)
+   * 1x 3D printed [desk mount](case/desk-mount.stl) *OR* [hanging mount](case/hanging-mount.stl)
    * 4x M1.2x4mm self tapping screws to mount the display with the clamps
    * 4x M1.7x5mm self tapping screws to fit the rear cover
    * 1x Power cable (e.g. a USB cable that can be cut)
