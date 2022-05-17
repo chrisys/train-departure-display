@@ -1,12 +1,8 @@
 import os
-import sys
 import time
-import json
 
-from datetime import timedelta
-from timeloop import Timeloop
 from datetime import datetime
-from PIL import ImageFont, Image
+from PIL import ImageFont
 
 from trains import loadDeparturesForStation
 from config import loadConfig
@@ -151,8 +147,11 @@ def renderDots(draw, width, height):
 
 
 def loadData(apiConfig, journeyConfig, config):
-    runHours = [int(x) for x in apiConfig['operatingHours'].split('-')]
-    if isRun(runHours[0], runHours[1]) == False:
+    runHours = []
+    if config['hoursPattern'].match(apiConfig['operatingHours']):
+        runHours = [int(x) for x in apiConfig['operatingHours'].split('-')]
+
+    if len(runHours) == 2 and isRun(runHours[0], runHours[1]) == False:
         return False, False, journeyConfig['outOfHoursName']
 
     if config['dualScreen'] == True:
@@ -353,12 +352,14 @@ try:
 
     timeAtStart = time.time()-config["refreshTime"]
     timeNow = time.time()
-
-    blankHours = [int(x) for x in config['screenBlankHours'].split('-')]
+    
+    blankHours = []
+    if config['hoursPattern'].match(config['screenBlankHours']):
+        blankHours = [int(x) for x in config['screenBlankHours'].split('-')]
 
     while True:
         with regulator:
-            if isRun(blankHours[0], blankHours[1]) == True:
+            if len(blankHours) == 2 and isRun(blankHours[0], blankHours[1]) == True:
                 device.clear()
                 if config['dualScreen'] == True:
                     device1.clear()

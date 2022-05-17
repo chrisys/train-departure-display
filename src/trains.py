@@ -1,7 +1,4 @@
-import os
 import requests
-import json
-import sys
 import re
 import xmltodict
 
