@@ -10,6 +10,11 @@ This project adheres to [Semantic Versioning](http://semver.org/).
 
 * Default to all-day operation fixes #72 [Chris Crocker-White]
 
+# v0.3.1
+## (2022-03-08)
+
+* Adjust tolerances between case parts [Chris Crocker-White]
+
 # v0.3.0
 ## (2021-12-09)
 
