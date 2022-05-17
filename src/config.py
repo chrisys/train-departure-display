@@ -1,4 +1,5 @@
 import os
+import re
 
 def loadConfig():
     data = {
@@ -8,8 +9,9 @@ def loadConfig():
 
     data["refreshTime"] = int(os.getenv("refreshTime") or 180)
     data["screenRotation"] = int(os.getenv("screenRotation") or 2)
-    data["screenBlankHours"] = os.getenv("screenBlankHours") or "1-6"
+    data["screenBlankHours"] = os.getenv("screenBlankHours") or ""
     data["dualScreen"] = bool(os.getenv("dualScreen") or False)
+    data["hoursPattern"] = re.compile("^((2[0-3]|[0-1]?[0-9])-(2[0-3]|[0-1]?[0-9]))$")
 
     data["journey"]["departureStation"] = os.getenv("departureStation") or "PAD"
     data["journey"]["destinationStation"] = os.getenv("destinationStation") or ""
@@ -20,7 +22,7 @@ def loadConfig():
     data["journey"]["screen2Platform"] = os.getenv("screen2Platform") or ""
 
     data["api"]["apiKey"] = os.getenv("apiKey") or None
-    data["api"]["operatingHours"] = os.getenv("operatingHours") or "8-22"
+    data["api"]["operatingHours"] = os.getenv("operatingHours") or ""
 
     return data
     
