@@ -28,5 +28,5 @@ data:
     - apiKey: UPDATE_ME
     - operatingHours: 8-22
     - screenBlankHours: 1-6
-version: 0.3.3
+version: 0.3.4
 
