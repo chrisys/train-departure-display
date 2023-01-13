@@ -24,8 +24,11 @@ post-provisioning: >-
   **Check out [the documentation](https://github.com/chrisys/train-departure-display/blob/main/docs/01-getting-started.md) for full hardware/software requirements and complete build guide.**
 
   - [Getting Started](https://github.com/chrisys/train-departure-display/blob/main/docs/01-getting-started.md)
+
   - [Connecting the display to the Pi](https://github.com/chrisys/train-departure-display/blob/main/docs/02-connecting-the-display-to-the-pi.md)
+
   - [Assembling the Case](https://github.com/chrisys/train-departure-display/blob/main/docs/03-assembling-the-case.md)
+
   - [Configuration](https://github.com/chrisys/train-departure-display/blob/main/docs/04-configuration.md)
 
   ## Credits
@@ -65,5 +68,5 @@ data:
     - timeOffset: 0
     - screen1Platform:
     - screen2Platform:
-version: 0.3.5
+version: 0.3.6
 
