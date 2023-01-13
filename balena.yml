@@ -3,7 +3,38 @@ type: sw.application
 description: >-
   A balenaCloud Raspberry Pi app to display replica near real-time UK railway
   station departure data on SSD1322 screens.
-joinable: "false"
+post-provisioning: >-
+  ![](https://raw.githubusercontent.com/chrisys/train-departure-display/main/assets/full-logo.png)
+
+  **A replica, near real-time, miniature UK railway station train departure sign based upon a Raspberry Pi Zero and 256x64 SPI OLED display(s). Uses the publicly available [OpenLDBWS API by National Rail Enquiries](https://www.nationalrail.co.uk/).**
+
+  ## Highlights
+
+  - **See local departures**: Display the depatures from your local station at home for up to date train information.
+
+  - **3D-printable cases**: Print your own miniature case to keep everything tidy - both desktop and 'hanging' style available.
+
+  - **Dual display support**: Run two displays each showing departures from different platforms from a single Raspberry Pi.
+
+  ![](https://raw.githubusercontent.com/chrisys/train-departure-display/main/assets/blog-header.jpg)
+  ![](https://raw.githubusercontent.com/chrisys/train-departure-display/main/docs/images/completed-unit.jpg)
+
+  ## How to build
+
+  **Check out [the documentation](https://github.com/chrisys/train-departure-display/blob/main/docs/01-getting-started.md) for full hardware/software requirements and complete build guide.**
+
+  - [Getting Started](https://github.com/chrisys/train-departure-display/blob/main/docs/01-getting-started.md)
+  - [Connecting the display to the Pi](https://github.com/chrisys/train-departure-display/blob/main/docs/02-connecting-the-display-to-the-pi.md)
+  - [Assembling the Case](https://github.com/chrisys/train-departure-display/blob/main/docs/03-assembling-the-case.md)
+  - [Configuration](https://github.com/chrisys/train-departure-display/blob/main/docs/04-configuration.md)
+
+  ## Credits
+
+  A big thanks to [Chris Hutchinson](https://github.com/chrishutchinson/) who originally started this project and inspired me to develop it further. [Blake](https://github.com/ghostseven) made some further improvements and this project was forked from [there](https://github.com/ghostseven/UK-Train-Departure-Display).
+
+  The fonts used were painstakingly put together by `DanielHartUK` and can be found on GitHub at https://github.com/DanielHartUK/Dot-Matrix-Typeface - A huge thanks for making that resource available!
+
+  Thanks to [@jajasilver](https://github.com/jajsilver/UK-Train-Departure-Display-NRE) and [@MatthewAscough](https://github.com/MatthewAscough/UK-Train-Departure-Display-NRE) for forming the basis of the OpenLDBWS implementation.
 assets:
   repository:
     type: blob.asset
@@ -28,5 +59,11 @@ data:
     - apiKey: UPDATE_ME
     - operatingHours: 8-22
     - screenBlankHours: 1-6
-version: 0.3.4
+    - screenRotation: 2
+    - dualScreen: False
+    - destinationStation:
+    - timeOffset: 0
+    - screen1Platform:
+    - screen2Platform:
+version: 0.3.5
 
