@@ -22,7 +22,7 @@ def makeFont(name, size):
             name
         )
     )
-    return ImageFont.truetype(font_path, size)
+    return ImageFont.truetype(font_path, size, layout_engine=ImageFont.Layout.BASIC)
 
 
 def renderDestination(departure, font):
@@ -53,7 +53,7 @@ def renderServiceStatus(departure):
             if departure["aimed_departure_time"] == departure["expected_departure_time"]:
                 train = "On time"
 
-        w, h = draw.textsize(train, font)
+        w = int(font.getlength(train))
         draw.text((width-w,0), text=train, font=font, fill="yellow")
     return drawText
 
@@ -96,8 +96,8 @@ def renderTime(draw, width, height):
     rawTime = datetime.now().time()
     hour, minute, second = str(rawTime).split('.')[0].split(':')
 
-    w1, h1 = draw.textsize("{}:{}".format(hour, minute), fontBoldLarge)
-    w2, h2 = draw.textsize(":00", fontBoldTall)
+    w1 = int(fontBoldLarge.getlength("{}:{}".format(hour, minute)))
+    w2 = int(fontBoldTall.getlength(":00"))
 
     draw.text(((width - w1 - w2) / 2, 0), text="{}:{}".format(hour, minute),
               font=fontBoldLarge, fill="yellow")
@@ -172,13 +172,13 @@ def drawStartup(device, width, height):
     virtualViewport = viewport(device, width=width, height=height)
 
     with canvas(device) as draw:
-        nameSize = draw.textsize("UK Train Departure Display", fontBold)
-        poweredSize = draw.textsize("Powered by", fontBold)
-        NRESize = draw.textsize("National Rail Enquiries", fontBold)
+        nameSize = int(fontBold.getlength("UK Train Departure Display"))
+        poweredSize = int(fontBold.getlength("Powered by"))
+        NRESize = int(fontBold.getlength("National Rail Enquiries"))
 
-        rowOne = snapshot(width, 10, renderName((width - nameSize[0]) / 2), interval=10)
-        rowThree = snapshot(width, 10, renderPoweredBy((width - poweredSize[0]) / 2), interval=10)
-        rowFour = snapshot(width, 10, renderNRE((width - NRESize[0]) / 2), interval=10)
+        rowOne = snapshot(width, 10, renderName((width - nameSize) / 2), interval=10)
+        rowThree = snapshot(width, 10, renderPoweredBy((width - poweredSize) / 2), interval=10)
+        rowFour = snapshot(width, 10, renderNRE((width - NRESize) / 2), interval=10)
 
         if len(virtualViewport._hotspots) > 0:
             for hotspot, xy in virtualViewport._hotspots:
@@ -193,20 +193,17 @@ def drawStartup(device, width, height):
 def drawBlankSignage(device, width, height, departureStation):
     global stationRenderCount, pauseCount
 
-    with canvas(device) as draw:
-        welcomeSize = draw.textsize("Welcome to", fontBold)
-
-    with canvas(device) as draw:
-        stationSize = draw.textsize(departureStation, fontBold)
+    welcomeSize = int(fontBold.getlength("Welcome to"))
+    stationSize = int(fontBold.getlength(departureStation))
 
     device.clear()
 
     virtualViewport = viewport(device, width=width, height=height)
 
     rowOne = snapshot(width, 10, renderWelcomeTo(
-        (width - welcomeSize[0]) / 2), interval=config["refreshTime"])
+        (width - welcomeSize) / 2), interval=config["refreshTime"])
     rowTwo = snapshot(width, 10, renderDepartureStation(
-        departureStation, (width - stationSize[0]) / 2), interval=config["refreshTime"])
+        departureStation, (width - stationSize) / 2), interval=config["refreshTime"])
     rowThree = snapshot(width, 10, renderDots, interval=config["refreshTime"])
     rowTime = hotspot(width, 14, renderTime)
 
@@ -249,16 +246,15 @@ def drawSignage(device, width, height, data):
 
     departures, firstDepartureDestinations, departureStation = data
 
-    with canvas(device) as draw:
-        w, h = draw.textsize(callingAt, font)
+    w = int(font.getlength(callingAt))
+
 
     callingWidth = w
     width = virtualViewport.width
 
     # First measure the text size
-    with canvas(device) as draw:
-        w, h = draw.textsize(status, font)
-        pw, ph = draw.textsize("Plat 88", font)
+    w = int(font.getlength(status))
+    pw = int(font.getlength("Plat 88"))
 
     if(len(departures) == 0):
         noTrains = drawBlankSignage(device, width=width, height=height, departureStation=departureStation)
