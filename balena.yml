@@ -68,5 +68,5 @@ data:
     - timeOffset: 0
     - screen1Platform:
     - screen2Platform:
-version: 0.3.6
+version: 0.3.7
 
