@@ -14,12 +14,22 @@ def loadConfig():
     data["hoursPattern"] = re.compile("^((2[0-3]|[0-1]?[0-9])-(2[0-3]|[0-1]?[0-9]))$")
 
     data["journey"]["departureStation"] = os.getenv("departureStation") or "PAD"
+
     data["journey"]["destinationStation"] = os.getenv("destinationStation") or ""
+    if data["journey"]["destinationStation"] == "null" or data["journey"]["destinationStation"] == "undefined":
+        data["journey"]["destinationStation"] = ""
+
     data["journey"]["outOfHoursName"] = os.getenv("outOfHoursName") or "London Paddington"
     data["journey"]["stationAbbr"] = { "International": "Intl." }
     data["journey"]['timeOffset'] = os.getenv("timeOffset") or "0"
-    data["journey"]["screen1Platform"] = os.getenv("screen1Platform") or ""
-    data["journey"]["screen2Platform"] = os.getenv("screen2Platform") or ""
+    data["journey"]["screen1Platform"] = os.getenv("screen1Platform")
+    data["journey"]["screen2Platform"] = os.getenv("screen2Platform")
+
+    if data["journey"]["screen1Platform"].isnumeric() != True:
+        data["journey"]["screen1Platform"] = ""
+
+    if data["journey"]["screen2Platform"].isnumeric() != True:
+        data["journey"]["screen2Platform"] = ""
 
     data["api"]["apiKey"] = os.getenv("apiKey") or None
     data["api"]["operatingHours"] = os.getenv("operatingHours") or ""
