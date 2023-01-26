@@ -138,9 +138,6 @@ def loadDeparturesForStation(journeyConfig, apiKey, rows):
         raise ValueError(
             "Please configure the departureStation environment variable")
 
-    if journeyConfig["destinationStation"] == "null" or journeyConfig["destinationStation"] == "undefined":
-        journeyConfig["destinationStation"] = ""
-
     if apiKey == None:
         raise ValueError(
             "Please configure the apiKey environment variable")
