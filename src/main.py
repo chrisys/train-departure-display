@@ -1,6 +1,8 @@
 import os
 import time
 
+import requests
+
 from datetime import datetime
 from PIL import ImageFont
 
@@ -159,14 +161,20 @@ def loadData(apiConfig, journeyConfig, config):
     else:
         rows = "3"
 
-    departures, stationName = loadDeparturesForStation(
-        journeyConfig, apiConfig["apiKey"], rows)
+    try: 
+        departures, stationName = loadDeparturesForStation(
+            journeyConfig, apiConfig["apiKey"], rows)
 
-    if (departures == None):
-        return False, False, stationName
+        if (departures == None):
+            return False, False, stationName
 
-    firstDepartureDestinations = departures[0]["calling_at_list"]
-    return departures, firstDepartureDestinations, stationName
+        firstDepartureDestinations = departures[0]["calling_at_list"]
+        return departures, firstDepartureDestinations, stationName
+    except requests.RequestException as err:
+        print("Error: Failed to fetch data from OpenLDBWS")
+        print(err.__context__)
+        return False, False, journeyConfig['outOfHoursName']
+
 
 def drawStartup(device, width, height):
     virtualViewport = viewport(device, width=width, height=height)
