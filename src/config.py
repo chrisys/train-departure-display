@@ -19,6 +19,7 @@ def loadConfig():
     if data["journey"]["destinationStation"] == "null" or data["journey"]["destinationStation"] == "undefined":
         data["journey"]["destinationStation"] = ""
 
+    data["journey"]["individualStationDepartureTime"] = bool(os.getenv("individualStationDepartureTime") or False)
     data["journey"]["outOfHoursName"] = os.getenv("outOfHoursName") or "London Paddington"
     data["journey"]["stationAbbr"] = { "International": "Intl." }
     data["journey"]['timeOffset'] = os.getenv("timeOffset") or "0"
