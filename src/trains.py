@@ -174,7 +174,6 @@ def ProcessDepartures(journeyConfig, APIOut):
                         prepareCarriagesMessage(thisDeparture["carriages"])
                     )
         else: # there are no calling points, so just display the destination
-            print(eachService)
             thisDeparture["calling_at_list"] = joinWithSpaces(
                 thisDeparture["destination_name"],
                 "only.",
