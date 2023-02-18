@@ -68,5 +68,6 @@ data:
     - timeOffset: 0
     - screen1Platform:
     - screen2Platform:
-version: 0.3.8
+    - individualStationDepartureTime: False
+version: 0.4.0
 
