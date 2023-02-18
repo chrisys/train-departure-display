@@ -10,7 +10,9 @@ def loadConfig():
     data["refreshTime"] = int(os.getenv("refreshTime") or 180)
     data["screenRotation"] = int(os.getenv("screenRotation") or 2)
     data["screenBlankHours"] = os.getenv("screenBlankHours") or ""
-    data["dualScreen"] = bool(os.getenv("dualScreen") or False)
+    data["dualScreen"] = False
+    if os.getenv("dualScreen") == "True":
+        data["dualScreen"] = True
     data["hoursPattern"] = re.compile("^((2[0-3]|[0-1]?[0-9])-(2[0-3]|[0-1]?[0-9]))$")
 
     data["journey"]["departureStation"] = os.getenv("departureStation") or "PAD"
@@ -19,7 +21,10 @@ def loadConfig():
     if data["journey"]["destinationStation"] == "null" or data["journey"]["destinationStation"] == "undefined":
         data["journey"]["destinationStation"] = ""
 
-    data["journey"]["individualStationDepartureTime"] = bool(os.getenv("individualStationDepartureTime") or False)
+    data["journey"]["individualStationDepartureTime"] = False
+    if os.getenv("individualStationDepartureTime") == "True":
+        data["journey"]["individualStationDepartureTime"] = True
+
     data["journey"]["outOfHoursName"] = os.getenv("outOfHoursName") or "London Paddington"
     data["journey"]["stationAbbr"] = { "International": "Intl." }
     data["journey"]['timeOffset'] = os.getenv("timeOffset") or "0"

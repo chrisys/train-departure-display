@@ -330,6 +330,7 @@ try:
     serial = spi(port=0)
     device = ssd1322(serial, mode="1", rotate=config['screenRotation'])
     if config['dualScreen'] == True:
+        print('Dual screen enabled')
         serial1 = spi(port=1,gpio_DC=5, gpio_RST=6)
         device1 = ssd1322(serial1, mode="1", rotate=config['screenRotation'])
     font = makeFont("Dot Matrix Regular.ttf", 10)
