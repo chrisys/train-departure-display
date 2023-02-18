@@ -22,6 +22,7 @@ These environment variables are specified using the [balenaCloud dashboard](http
 | `dualScreen` | `True` (if you are using two displays)
 | `screen1Platform` | `1` (sets the platform you want to have displayed on the first or single-screen display)
 | `screen2Platform` | `2` (sets the platform you want to have displayed on the second display)
+| `individualStationDepartureTime` | `False` (Displays the estimated or scheduled time of the service at each leg of a journey)
 
 
 If using two screens the following line needs to be added into /boot/config.txt which is achieved by using the 'Define DT overlays' option within the Device configuration screen on balenaCloud: `spi1-3cs`

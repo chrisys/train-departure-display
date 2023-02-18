@@ -5,9 +5,43 @@ import xmltodict
 def removeBrackets(originalName):
     return re.split(r" \(",originalName)[0]
 
+def isTime(value):
+    matches = re.findall(r"\d{2}:\d{2}", value)
+    return len(matches) > 0
+
 def joinwithCommas(listIN):
     return ", ".join(listIN)[::-1].replace(",", "dna ", 1)[::-1]
 
+def removeEmptyStrings(items):
+    return filter(None, items)
+
+def joinWith(items, joiner: str):
+    filtered_list = removeEmptyStrings(items)
+    return joiner.join(filtered_list)
+
+def joinWithSpaces(*args):
+    return joinWith(args, " ")
+
+def prepareServiceMessage(operator):
+    return joinWithSpaces("A", operator, "Service")
+
+def prepareLocationName(location, show_departure_time):
+    location_name = removeBrackets(location['lt7:locationName'])
+
+    if not show_departure_time:
+        return location_name
+    else:
+        scheduled_time = location["lt7:st"]
+        expected_time = location["lt7:et"]
+        departure_time = expected_time if isTime(expected_time) else scheduled_time
+        formatted_departure = joinWith(["(", departure_time, ")"], "")
+        return joinWithSpaces(location_name, formatted_departure)
+
+def prepareCarriagesMessage(carriages):
+    if carriages == 0:
+        return ""
+    else:
+        return joinWithSpaces("formed of", carriages, "coaches.")
 
 def ArrivalOrder(ServicesIN):
     ServicesOUT = []
@@ -22,7 +56,8 @@ def ArrivalOrder(ServicesIN):
     ServicesOUT = sorted(ServicesOUT, key=lambda k: k['sortOrder'])
     return ServicesOUT
 
-def ProcessDepartures(APIOut):
+def ProcessDepartures(journeyConfig, APIOut):
+    show_individual_departure_time = journeyConfig["individualStationDepartureTime"]
     APIElements = xmltodict.parse(APIOut)
     Services = []
 
@@ -75,9 +110,9 @@ def ProcessDepartures(APIOut):
 
         # get carriages, if available
         if 'lt4:length' in eachService:
-            thisDeparture["carriages"] = " formed of "+eachService["lt4:length"]+" coaches."
+            thisDeparture["carriages"] = eachService["lt4:length"]
         else:
-            thisDeparture["carriages"] = ""
+            thisDeparture["carriages"] = 0
 
         # get operator, if available
         if 'lt4:operator' in eachService:
@@ -106,27 +141,45 @@ def ProcessDepartures(APIOut):
                 for sectionNum, eachSection in enumerate(CallingPointList):
                     if isinstance(eachSection['lt7:callingPoint'], dict):
                         # there is only one calling point in this list
-                        CallLists.append([eachSection['lt7:callingPoint']['lt7:locationName']])
+                        CallLists.append([prepareLocationName(eachSection['lt7:callingPoint'], show_individual_departure_time)])
                         CallListJoined.append(CallLists[sectionNum])
                     else: # there are several calling points in this list
-                        CallLists.append([removeBrackets(i['lt7:locationName']) for i in eachSection['lt7:callingPoint']])
+                        CallLists.append([prepareLocationName(i, show_individual_departure_time) for i in eachSection['lt7:callingPoint']])
 
                         CallListJoined.append(joinwithCommas(CallLists[sectionNum]))
                         # CallListJoined.append(", ".join(CallLists[sectionNum]))
-                thisDeparture["calling_at_list"] = " with a portion going to ".join(CallListJoined) + ".   --   A "+thisDeparture["operator"]+" Service"+thisDeparture["carriages"]
+                thisDeparture["calling_at_list"] = joinWithSpaces(
+                    " with a portion going to ".join(CallListJoined),
+                    "  --  ",
+                    prepareServiceMessage(thisDeparture["operator"]),
+                    prepareCarriagesMessage(thisDeparture["carriages"])
+                )
 
             else: # there is one list of calling points
                 if isinstance(eachService['lt7:subsequentCallingPoints']['lt7:callingPointList']['lt7:callingPoint'],dict):
                     # there is only one calling point in the list
-                    thisDeparture["calling_at_list"] = eachService['lt7:subsequentCallingPoints']['lt7:callingPointList']['lt7:callingPoint']['lt7:locationName'] + " only.   --   A "+thisDeparture["operator"]+" Service"+thisDeparture["carriages"]
+                    thisDeparture["calling_at_list"] = joinWithSpaces(
+                        prepareLocationName(eachService['lt7:subsequentCallingPoints']['lt7:callingPointList']['lt7:callingPoint'], show_individual_departure_time),
+                        "only.",
+                        "  --  ",
+                        prepareServiceMessage(thisDeparture["operator"]),
+                        prepareCarriagesMessage(thisDeparture["carriages"])
+                    )
                 else: # there are several calling points in the list
-                    CallList = [removeBrackets(i['lt7:locationName']) for i in eachService['lt7:subsequentCallingPoints']['lt7:callingPointList']['lt7:callingPoint']]
-                    thisDeparture["calling_at_list"] = joinwithCommas(CallList) + ".   --   A "+thisDeparture["operator"]+" Service"+thisDeparture["carriages"]
-
-                    # thisDeparture["calling_at_list"] = ", ".join(CallList)
+                    CallList = [prepareLocationName(i, show_individual_departure_time) for i in eachService['lt7:subsequentCallingPoints']['lt7:callingPointList']['lt7:callingPoint']]
+                    thisDeparture["calling_at_list"] = joinWithSpaces(
+                        joinwithCommas(CallList) + ".",
+                        " --  ",
+                        prepareServiceMessage(thisDeparture["operator"]),
+                        prepareCarriagesMessage(thisDeparture["carriages"])
+                    )
         else: # there are no calling points, so just display the destination
-            thisDeparture["calling_at_list"] = thisDeparture["destination_name"] + " only.   --   A "+thisDeparture["operator"]+" Service"+thisDeparture["carriages"]
-
+            thisDeparture["calling_at_list"] = joinWithSpaces(
+                thisDeparture["destination_name"],
+                "only.",
+                prepareServiceMessage(thisDeparture["operator"]),
+                prepareCarriagesMessage(thisDeparture["carriages"])
+            )
         #print("the " + thisDeparture["aimed_departure_time"] + " calls at " + thisDeparture["calling_at_list"])
 
         Departures[servicenum] = thisDeparture
@@ -165,6 +218,6 @@ def loadDeparturesForStation(journeyConfig, apiKey, rows):
 
     APIOut = requests.post(apiURL, data=APIRequest, headers=headers).text
 
-    Departures, departureStationName = ProcessDepartures(APIOut)
+    Departures, departureStationName = ProcessDepartures(journeyConfig, APIOut)
 
     return Departures, departureStationName
