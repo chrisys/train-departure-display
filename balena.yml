@@ -47,7 +47,7 @@ assets:
     type: blob.asset
     data:
       url: >-
-        https://raw.githubusercontent.com/balenalabs/uk-train-departure-display/master/assets/logo.png
+        https://raw.githubusercontent.com/chrisys/train-departure-display/master/assets/logo.png
 data:
   defaultDeviceType: raspberry-pi
   supportedDeviceTypes:
