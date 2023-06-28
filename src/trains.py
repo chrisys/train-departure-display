@@ -32,7 +32,11 @@ def prepareLocationName(location, show_departure_time):
         return location_name
     else:
         scheduled_time = location["lt7:st"]
-        expected_time = location["lt7:et"]
+        try:
+            expected_time = location["lt7:et"]
+        except KeyError:
+            # as per api docs, it's 'at' if there isn't an 'et':
+            expected_time = location["lt7:at"]
         departure_time = expected_time if isTime(expected_time) else scheduled_time
         formatted_departure = joinWith(["(", departure_time, ")"], "")
         return joinWithSpaces(location_name, formatted_departure)
