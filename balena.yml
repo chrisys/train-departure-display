@@ -69,5 +69,8 @@ data:
     - screen1Platform:
     - screen2Platform:
     - individualStationDepartureTime: False
+    - showDepartureNumbers: False
+    - firstDepartureBold: True
+    - targetFPS: 70
 version: 0.4.0
 
