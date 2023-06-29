@@ -23,7 +23,7 @@ def joinWithSpaces(*args):
     return joinWith(args, " ")
 
 def prepareServiceMessage(operator):
-    return joinWithSpaces("A", operator, "Service")
+    return joinWithSpaces("A" if operator not in ['Elizabeth Line', 'Avanti West Coast'] else "An", operator, "Service")
 
 def prepareLocationName(location, show_departure_time):
     location_name = removeBrackets(location['lt7:locationName'])
@@ -32,7 +32,11 @@ def prepareLocationName(location, show_departure_time):
         return location_name
     else:
         scheduled_time = location["lt7:st"]
-        expected_time = location["lt7:et"]
+        try:
+            expected_time = location["lt7:et"]
+        except KeyError:
+            # as per api docs, it's 'at' if there isn't an 'et':
+            expected_time = location["lt7:at"]
         departure_time = expected_time if isTime(expected_time) else scheduled_time
         formatted_departure = joinWith(["(", departure_time, ")"], "")
         return joinWithSpaces(location_name, formatted_departure)

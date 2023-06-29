@@ -4,15 +4,16 @@ import time
 import requests
 
 from datetime import datetime
-from PIL import ImageFont
+from PIL import ImageFont, Image, ImageDraw
 
 from trains import loadDeparturesForStation
 from config import loadConfig
 from open import isRun
 
-from luma.core.interface.serial import spi
+from luma.core.interface.serial import spi, noop
 from luma.core.render import canvas
 from luma.oled.device import ssd1322
+from luma.emulator.device import pygame
 from luma.core.virtual import viewport, snapshot, hotspot
 from luma.core.sprite_system import framerate_regulator
 
@@ -27,12 +28,15 @@ def makeFont(name, size):
     return ImageFont.truetype(font_path, size, layout_engine=ImageFont.Layout.BASIC)
 
 
-def renderDestination(departure, font):
+def renderDestination(departure, font, pos):
     departureTime = departure["aimed_departure_time"]
     destinationName = departure["destination_name"]
 
     def drawText(draw, width, height):
-        train = f"{departureTime}  {destinationName}"
+        if config["showDepartureNumbers"] == True:
+            train = f"{pos}  {departureTime}  {destinationName}"
+        else:
+            train = f"{departureTime}  {destinationName}"
         draw.text((0, 0), text=train, font=font, fill="yellow")
 
     return drawText
@@ -74,23 +78,56 @@ def renderCallingAt(draw, width, height):
     stations = "Calling at: "
     draw.text((0, 0), text=stations, font=font, fill="yellow")
 
+pixelsLeft = 1
+pixelsUp = 0
+hasElevated = 0
+renderDictionary = dict()
 
 def renderStations(stations):
     def drawText(draw, width, height):
-        global stationRenderCount, pauseCount
+        global stationRenderCount, pauseCount, pixelsLeft, pixelsUp, hasElevated
 
         if(len(stations) == stationRenderCount - 5):
             stationRenderCount = 0
 
-        draw.text(
-            (0, 0), text=stations[stationRenderCount:], width=width, font=font, fill="yellow")
-
-        if stationRenderCount == 0 and pauseCount < 8:
-            pauseCount += 1
-            stationRenderCount = 0
+        if stations in renderDictionary:
+            pre = renderDictionary[stations]
+            bitmap = pre['bitmap']
+            txt_width = pre['txt_width']
+            txt_height = pre['txt_height']
         else:
-            pauseCount = 0
-            stationRenderCount += 1
+            _, _, txt_width, txt_height = font.getbbox(stations)
+            bitmap = Image.new('L', [txt_width, txt_height], color=0)
+            pre_render_draw = ImageDraw.Draw(bitmap)
+            pre_render_draw.text((0, 0), text=stations, width=width, font=font, fill=255)
+            renderDictionary[stations] = {'bitmap': bitmap, 'txt_width': txt_width, 'txt_height': txt_height}
+
+        if hasElevated:
+            # draw pixel position left
+            draw.bitmap((pixelsLeft - 1,0), bitmap, fill="yellow")
+            # continue left until morale improves
+            if -pixelsLeft > txt_width and pauseCount < 8:
+                pauseCount += 1
+                pixelsLeft = 0
+                hasElevated = 0
+            else:
+                pauseCount = 0
+                pixelsLeft = pixelsLeft - 1
+        else:
+            # draw it up from the bottom
+            draw.bitmap((0, txt_height - pixelsUp), bitmap, fill="yellow")
+            # continue up until morale improves
+            if pixelsUp == txt_height:
+                pauseCount += 1
+                if pauseCount > 20:
+                    hasElevated = 1
+                    pixelsUp = 0
+            else:
+                pixelsUp = pixelsUp + 1
+            
+        # draw.text((pixelsLeft, 0), text=stations, width=width, font=font, fill="yellow")
+
+
 
     return drawText
 
@@ -213,7 +250,7 @@ def drawBlankSignage(device, width, height, departureStation):
     rowTwo = snapshot(width, 10, renderDepartureStation(
         departureStation, (width - stationSize) / 2), interval=config["refreshTime"])
     rowThree = snapshot(width, 10, renderDots, interval=config["refreshTime"])
-    rowTime = hotspot(width, 14, renderTime)
+    rowTime = snapshot(width, 14, renderTime, interval=0.1)
 
     if len(virtualViewport._hotspots) > 0:
         for vhotspot, xy in virtualViewport._hotspots:
@@ -256,7 +293,6 @@ def drawSignage(device, width, height, data):
 
     w = int(font.getlength(callingAt))
 
-
     callingWidth = w
     width = virtualViewport.width
 
@@ -269,29 +305,29 @@ def drawSignage(device, width, height, data):
         return noTrains
 
     rowOneA = snapshot(
-        width - w - pw - 5, 10, renderDestination(departures[0], fontBold), interval=config["refreshTime"])
+        width - w - pw - 5, 10, renderDestination(departures[0], font, '1st'), interval=config["refreshTime"])
     rowOneB = snapshot(w, 10, renderServiceStatus(
         departures[0]), interval=10)
     rowOneC = snapshot(pw, 10, renderPlatform(departures[0]), interval=config["refreshTime"])
     rowTwoA = snapshot(callingWidth, 10, renderCallingAt, interval=config["refreshTime"])
     rowTwoB = snapshot(width - callingWidth, 10,
-                       renderStations(firstDepartureDestinations), interval=0.1)
+                       renderStations(firstDepartureDestinations), interval=0.02)
 
     if(len(departures) > 1):
         rowThreeA = snapshot(width - w - pw, 10, renderDestination(
-            departures[1], font), interval=config["refreshTime"])
+            departures[1], font, '2nd'), interval=config["refreshTime"])
         rowThreeB = snapshot(w, 10, renderServiceStatus(
             departures[1]), interval=config["refreshTime"])
         rowThreeC = snapshot(pw, 10, renderPlatform(departures[1]), interval=config["refreshTime"])
 
     if(len(departures) > 2):
         rowFourA = snapshot(width - w - pw, 10, renderDestination(
-            departures[2], font), interval=10)
+            departures[2], font, '3rd'), interval=10)
         rowFourB = snapshot(w, 10, renderServiceStatus(
             departures[2]), interval=10)
         rowFourC = snapshot(pw, 10, renderPlatform(departures[2]), interval=config["refreshTime"])
 
-    rowTime = hotspot(width, 14, renderTime)
+    rowTime = snapshot(width, 14, renderTime, interval=0.1)
 
     if len(virtualViewport._hotspots) > 0:
         for vhotspot, xy in virtualViewport._hotspots:
@@ -326,13 +362,17 @@ try:
 
     print('Starting Train Departure Display v' + version_file.read())
     config = loadConfig()
+    if config['emulator'] == True:
+        serial = noop()
+        device = pygame(256, 64)
+    else:
+        serial = spi(port=0)
+        device = ssd1322(serial, mode="1", rotate=config['screenRotation'])
 
-    serial = spi(port=0)
-    device = ssd1322(serial, mode="1", rotate=config['screenRotation'])
     if config['dualScreen'] == True:
         print('Dual screen enabled')
-        serial1 = spi(port=1,gpio_DC=5, gpio_RST=6)
-        device1 = ssd1322(serial1, mode="1", rotate=config['screenRotation'])
+        # serial1 = spi(port=1,gpio_DC=5, gpio_RST=6)
+        # device1 = ssd1322(serial1, mode="1", rotate=config['screenRotation'])
     font = makeFont("Dot Matrix Regular.ttf", 10)
     fontBold = makeFont("Dot Matrix Bold.ttf", 10)
     fontBoldTall = makeFont("Dot Matrix Bold Tall.ttf", 10)
@@ -345,7 +385,7 @@ try:
     pauseCount = 0
     loop_count = 0
 
-    regulator = framerate_regulator(20)
+    regulator = framerate_regulator(0)
 
     # display NRE attribution while data loads
     virtual = drawStartup(device, width=widgetWidth, height=widgetHeight)
@@ -353,10 +393,11 @@ try:
     if config['dualScreen'] == True:
         virtual = drawStartup(device1, width=widgetWidth, height=widgetHeight)
         virtual.refresh()
-    time.sleep(5)
+    time.sleep(0.1)
 
     timeAtStart = time.time()-config["refreshTime"]
     timeNow = time.time()
+    timeFPS = time.time()
     
     blankHours = []
     if config['hoursPattern'].match(config['screenBlankHours']):
@@ -370,9 +411,11 @@ try:
                     device1.clear()
                 time.sleep(10)
             else:
-                if(timeNow - timeAtStart >= config["refreshTime"]):
-
+                if(timeNow - timeFPS >= 2):
+                    timeFPS = time.time()
+                    # print(chr(27) + "[2J")
                     print('Effective FPS: ' + str(round(regulator.effective_FPS(),2)))
+                if(timeNow - timeAtStart >= config["refreshTime"]):
                     data = loadData(config["api"], config["journey"], config)
                     if data[0] == False:
                         virtual = drawBlankSignage(

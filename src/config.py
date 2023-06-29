@@ -7,15 +7,18 @@ def loadConfig():
         "api": {}
     }
 
-    data["refreshTime"] = int(os.getenv("refreshTime") or 180)
+    data["refreshTime"] = int(os.getenv("refreshTime") or 30)
     data["screenRotation"] = int(os.getenv("screenRotation") or 2)
     data["screenBlankHours"] = os.getenv("screenBlankHours") or ""
+    data["emulator"] = False
+    if os.getenv("emulator") == "True":
+        data["emulator"] = True    
     data["dualScreen"] = False
     if os.getenv("dualScreen") == "True":
         data["dualScreen"] = True
     data["hoursPattern"] = re.compile("^((2[0-3]|[0-1]?[0-9])-(2[0-3]|[0-1]?[0-9]))$")
 
-    data["journey"]["departureStation"] = os.getenv("departureStation") or "PAD"
+    data["journey"]["departureStation"] = os.getenv("departureStation") or "STP"
 
     data["journey"]["destinationStation"] = os.getenv("destinationStation") or ""
     if data["journey"]["destinationStation"] == "null" or data["journey"]["destinationStation"] == "undefined":
@@ -39,6 +42,10 @@ def loadConfig():
 
     data["api"]["apiKey"] = os.getenv("apiKey") or None
     data["api"]["operatingHours"] = os.getenv("operatingHours") or ""
+
+    data["showDepartureNumbers"] = False
+    if os.getenv("showDepartureNumbers") == "True":
+        data["showDepartureNumbers"] = True
 
     return data
     
