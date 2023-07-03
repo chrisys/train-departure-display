@@ -1,5 +1,4 @@
 luma.oled
-luma.emulator
 timeloop
 requests
 xmltodict

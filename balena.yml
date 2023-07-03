@@ -72,5 +72,6 @@ data:
     - showDepartureNumbers: False
     - firstDepartureBold: True
     - targetFPS: 70
-version: 0.4.0
+    - fpsTime: 10
+version: 0.5.0
 

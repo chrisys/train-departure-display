@@ -1,32 +1,31 @@
-FROM balenalib/raspberry-pi-debian-python:3.7-buster-run AS builder
+FROM balenalib/raspberry-pi-alpine-python:3.11.2-3.15-build as builder
 
 WORKDIR /usr/src/app
 
-RUN mkdir -p /usr/src/debian-rootfs
+# Shared libraries
+RUN apk add freetype-dev libjpeg-turbo-dev
 
-RUN install_packages apt-rdepends
-
-RUN apt-get update && \
-        apt-get download \
-        $(apt-rdepends tzdata python3 libopenjp2-7 libfreetype6-dev libjpeg-dev libtiff5 libxcb1 | grep -v "^ " | sed 's/debconf-2.0/debconf/g' | sed 's/^libc-dev$/libc6-dev/g' | sed 's/^libz-dev$/zlib1g-dev/g')
-
-RUN for pkg in *.deb; \
-      do dpkg-deb  -x $pkg /usr/src/debian-rootfs; \
-      done
-
+# Install the required python packages, and save the compiled result to an output folder
+# This requires gcc/etc which is why we do it in the build image and save the result for the run image
 COPY ./requirements.txt .
-RUN pip install -t /usr/src/python-packages -r requirements.txt --no-cache-dir --extra-index-url=https://www.piwheels.org/simple
+RUN pip install --target=/usr/src/python-packages -r requirements.txt --no-cache-dir --config-settings="pillow=--disable-zlib"
 
+# Grab the "run" image for the device, which is much lighter weight
+FROM balenalib/raspberry-pi-alpine-python:3.11.2-3.15-run
 
-FROM busybox:stable
-
-
-COPY --from=builder /usr/src/debian-rootfs ./
+# Copy in the compiled packages
 COPY --from=builder /usr/src/python-packages/ /usr/src/python-packages/
 
-COPY VERSION ./
+# Shared libraries
+RUN apk add freetype-dev libjpeg-turbo-dev
 
+# And the app
+WORKDIR /usr/src/app
 COPY src ./src
-ENV PYTHONPATH=/usr/src/python-packages/
+COPY VERSION .
 
+# Tell python where to find these mysterious precompiled packages
+ENV PYTHONPATH=/usr/src/python-packages
+
+# And off we go
 CMD ["python3", "src/main.py"]

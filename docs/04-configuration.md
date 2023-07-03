@@ -24,7 +24,6 @@ These environment variables are specified using the [balenaCloud dashboard](http
 | `screen2Platform` | `2` (sets the platform you want to have displayed on the second display)
 | `individualStationDepartureTime` | `False` (Displays the estimated or scheduled time of the service at each leg of a journey)
 | `fpsTime` | `4` (adjusts how often the effective FPS is displayed)
-| `emulator` | `True` (outputs to pygame emulator rather than serial; useful for running on a development machine)
 | `headless` | `True` (outputs to noop serial device rather than serial port; useful for running on a development machine)
 | `showDepartureNumbers` | `True` (adds 1st / 2nd / 3rd as per UK train departures)
 | `firstDepartureBold` | `False` (makes the first departure use either the bold or normal font)
