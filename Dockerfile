@@ -17,7 +17,7 @@ FROM balenalib/raspberry-pi-alpine-python:3.11.2-3.15-run
 COPY --from=builder /usr/src/python-packages/ /usr/src/python-packages/
 
 # Shared libraries
-RUN apk add freetype-dev libjpeg-turbo-dev
+RUN apk add freetype-dev libjpeg-turbo-dev tzdata
 
 # And the app
 WORKDIR /usr/src/app
