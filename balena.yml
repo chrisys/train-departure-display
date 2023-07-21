@@ -73,5 +73,6 @@ data:
     - firstDepartureBold: True
     - targetFPS: 70
     - fpsTime: 10
-version: 0.5.1
+    - debug: False
+version: 0.5.2
 

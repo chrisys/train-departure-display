@@ -28,6 +28,7 @@ These environment variables are specified using the [balenaCloud dashboard](http
 | `showDepartureNumbers` | `True` (adds 1st / 2nd / 3rd as per UK train departures)
 | `firstDepartureBold` | `False` (makes the first departure use either the bold or normal font)
 | `targetFPS` | `20` (Frame rate regulator FPS target; 0 disables the regulator, which will increase FPS on constrained CPU, but will run the CPU hot at 100%.)
+| `debug` | `False` (Display debugging information; `True` shows the debug info permanently, any integer `>1` will show instead of the splash screen for that number of seconds)
 
 If using two screens the following line needs to be added into /boot/config.txt which is achieved by using the 'Define DT overlays' option within the Device configuration screen on balenaCloud: `spi1-3cs`
 

@@ -16,6 +16,14 @@ def loadConfig():
     data["headless"] = False
     if os.getenv("headless") == "True":
         data["headless"] = True
+
+    data["debug"] = False
+    if os.getenv("debug") == "True":
+        data["debug"] = True
+    else:
+        if os.getenv("debug") and os.getenv("debug").isnumeric():
+            data["debug"] = int(os.getenv("debug"))
+
     data["dualScreen"] = False
     if os.getenv("dualScreen") == "True":
         data["dualScreen"] = True

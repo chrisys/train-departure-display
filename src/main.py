@@ -15,7 +15,7 @@ from luma.core.render import canvas
 from luma.oled.device import ssd1322
 from luma.core.virtual import viewport, snapshot
 from luma.core.sprite_system import framerate_regulator
-from luma.emulator.device import pygame
+# from luma.emulator.device import pygame
 
 import socket, re, uuid
 
@@ -161,29 +161,26 @@ def renderTime(draw, width, *_):
     draw.bitmap(((width - w1 - w2) / 2, 0), HMBitmap, fill="yellow")
     draw.bitmap((((width - w1 - w2) / 2) + w1, 5), SBitmap, fill="yellow")
 
-def renderDebugLine(xOffset, message):
-    def drawText(draw, *_):
-        draw.text((int(xOffset), 0), text=message, font=font, fill="yellow")
-
-    return drawText
-
 def renderDebugScreen(lines):
     def drawDebug(draw, *_):
         # draw a box
         draw.rectangle((1, 1, 254, 45), outline="yellow", fill=None)
 
-        # line 1
-        draw.text((5, 5), text=lines["1A"], font=font, fill="yellow")
-        draw.text((45, 5), text=lines["1B"], font=font, fill="yellow")
+        # coords for each line of text
+        coords = {
+            '1A': (5, 5),
+            '1B': (45, 5),
+            '2A': (5, 18),
+            '2B': (45, 18),
+            '3A': (5, 31),
+            '3B': (45, 31),
+            '3C': (140, 31)
+        }
 
-        # line 2
-        draw.text((5, 18), text=lines["2A"], font=font, fill="yellow")
-        draw.text((45, 18), text=lines["2B"], font=font, fill="yellow")
-
-        # line 3
-        draw.text((5, 31), text=lines["3A"], font=font, fill="yellow")
-        draw.text((45, 31), text=lines["3B"], font=font, fill="yellow")
-        draw.text((140, 31), text=lines["3C"], font=font, fill="yellow")
+        # loop through lines and check if cached
+        for key, text in lines.items():
+            w, _, bitmap = cachedBitmapText(text, font)
+            draw.bitmap(coords[key], bitmap, fill="yellow")        
 
     return drawDebug
 
@@ -282,19 +279,20 @@ def drawStartup(device, width, height):
 
     return virtualViewport
 
-def drawDebugScreen(device, width, height):
+def drawDebugScreen(device, width, height, screen="1", showTime=False):
     virtualViewport = viewport(device, width=width, height=height)
 
     versionNumber = getVersionNumber().strip()
     
     ipAddress = getIp()
 
-    macAddress = ':'.join(re.findall('..', '%012x' % uuid.getnode()))
+    macAddress = ':'.join(re.findall('..', '%012x' % uuid.getnode())).upper()
 
     debugLines = {}
-    debugLines["1A"] = "Display"
 
     # ok let's build the strings, there's a bit of optional data here so let's do it the old fashioned way with appends
+
+    debugLines["1A"] = "Display"
 
     debugLines["1B"] = f"= {config['journey']['departureStation']}"
 
@@ -303,8 +301,8 @@ def drawDebugScreen(device, width, height):
         debugLines["1B"] += f"->{config['journey']['destinationStation']}"
 
     # what about a plaform?
-    if(config["journey"]["screen1Platform"]):
-        debugLines["1B"] += f" (Plat{config['journey']['screen1Platform']}) "
+    if(config["journey"]["screen"+screen+"Platform"]):
+        debugLines["1B"] += f" (Plat{config['journey']['screen'+screen+'Platform']}) "
     else:
         debugLines["1B"] += " (PlatAll) "
 
@@ -323,10 +321,12 @@ def drawDebugScreen(device, width, height):
     debugLines["3C"] = f"IP={ipAddress}"
 
     theBox = snapshot(width, 64, renderDebugScreen(debugLines), interval=config["refreshTime"])
-    rowTime = snapshot(width, 14, renderTime, interval=0.1)
-
-    virtualViewport.add_hotspot(rowTime, (0, 50))
     virtualViewport.add_hotspot(theBox, (0, 0))
+
+    if(showTime):
+        rowTime = snapshot(width, 14, renderTime, interval=0.1)
+        virtualViewport.add_hotspot(rowTime, (0, 50))
+
     return virtualViewport
 
 
@@ -461,7 +461,6 @@ def drawSignage(device, width, height, data):
 
     return virtualViewport
 
-
 def getIp():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.settimeout(0)
@@ -509,14 +508,23 @@ try:
 
     regulator = framerate_regulator(config['targetFPS'])
 
-    # display NRE attribution while data loads
-    virtual = drawStartup(device, width=widgetWidth, height=widgetHeight)
-    virtual.refresh()
-    if config['dualScreen']:
-        virtual = drawStartup(device1, width=widgetWidth, height=widgetHeight)
+    if (config['debug'] > 1):
+        # render screen and sleep for specified seconds
+        virtual = drawDebugScreen(device, width=widgetWidth, height=widgetHeight)
         virtual.refresh()
-    if config['headless'] is not True:
-        time.sleep(5)
+        if config['dualScreen']:
+            virtual = drawDebugScreen(device, width=widgetWidth, height=widgetHeight, screen="2")
+            virtual.refresh()
+        time.sleep(config['debug'])
+    else:
+        # display NRE attribution while data loads
+        virtual = drawStartup(device, width=widgetWidth, height=widgetHeight)
+        virtual.refresh()
+        if config['dualScreen']:
+            virtual = drawStartup(device1, width=widgetWidth, height=widgetHeight)
+            virtual.refresh()
+        if config['headless'] is not True:
+            time.sleep(5)
 
     timeAtStart = time.time() - config["refreshTime"]
     timeNow = time.time()
@@ -538,24 +546,31 @@ try:
                     timeFPS = time.time()
                     print('Effective FPS: ' + str(round(regulator.effective_FPS(), 2)))
                 if timeNow - timeAtStart >= config["refreshTime"]:
-                    data = loadData(config["api"], config["journey"], config)
-                    if data[0] is False:
-                        virtual = drawBlankSignage(
-                            device, width=widgetWidth, height=widgetHeight, departureStation=data[2])
+                    # check if debug mode is enabled 
+                    if config["debug"] == True:
+                        print(config["debug"])
+                        virtual = drawDebugScreen(device, width=widgetWidth, height=widgetHeight, showTime=True)
                         if config['dualScreen']:
-                            virtual1 = drawBlankSignage(
-                                device1, width=widgetWidth, height=widgetHeight, departureStation=data[2])
+                            virtual1 = drawDebugScreen(device1, width=widgetWidth, height=widgetHeight, showTime=True, screen="2")
                     else:
-                        departureData = data[0]
-                        nextStations = data[1]
-                        station = data[2]
-                        screenData = platform_filter(departureData, config["journey"]["screen1Platform"], station)
-                        # virtual = drawSignage(device, width=widgetWidth, height=widgetHeight, data=screenData)
-                        virtual = drawDebugScreen(device, width=widgetWidth, height=widgetHeight)
+                        data = loadData(config["api"], config["journey"], config)
+                        if data[0] is False:
+                            virtual = drawBlankSignage(
+                                device, width=widgetWidth, height=widgetHeight, departureStation=data[2])
+                            if config['dualScreen']:
+                                virtual1 = drawBlankSignage(
+                                    device1, width=widgetWidth, height=widgetHeight, departureStation=data[2])
+                        else:
+                            departureData = data[0]
+                            nextStations = data[1]
+                            station = data[2]
+                            screenData = platform_filter(departureData, config["journey"]["screen1Platform"], station)
+                            virtual = drawSignage(device, width=widgetWidth, height=widgetHeight, data=screenData)
+                            # virtual = drawDebugScreen(device, width=widgetWidth, height=widgetHeight, showTime=True)
 
-                        if config['dualScreen']:
-                            screen1Data = platform_filter(departureData, config["journey"]["screen2Platform"], station)
-                            virtual1 = drawSignage(device1, width=widgetWidth, height=widgetHeight, data=screen1Data)
+                            if config['dualScreen']:
+                                screen1Data = platform_filter(departureData, config["journey"]["screen2Platform"], station)
+                                virtual1 = drawSignage(device1, width=widgetWidth, height=widgetHeight, data=screen1Data)
 
                     timeAtStart = time.time()
 
