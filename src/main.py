@@ -15,7 +15,9 @@ from luma.core.render import canvas
 from luma.oled.device import ssd1322
 from luma.core.virtual import viewport, snapshot
 from luma.core.sprite_system import framerate_regulator
+from luma.emulator.device import pygame
 
+import socket, re, uuid
 
 def makeFont(name, size):
     font_path = os.path.abspath(
@@ -159,6 +161,31 @@ def renderTime(draw, width, *_):
     draw.bitmap(((width - w1 - w2) / 2, 0), HMBitmap, fill="yellow")
     draw.bitmap((((width - w1 - w2) / 2) + w1, 5), SBitmap, fill="yellow")
 
+def renderDebugLine(xOffset, message):
+    def drawText(draw, *_):
+        draw.text((int(xOffset), 0), text=message, font=font, fill="yellow")
+
+    return drawText
+
+def renderDebugScreen(lines):
+    def drawDebug(draw, *_):
+        # draw a box
+        draw.rectangle((1, 1, 254, 45), outline="yellow", fill=None)
+
+        # line 1
+        draw.text((5, 5), text=lines["1A"], font=font, fill="yellow")
+        draw.text((45, 5), text=lines["1B"], font=font, fill="yellow")
+
+        # line 2
+        draw.text((5, 18), text=lines["2A"], font=font, fill="yellow")
+        draw.text((45, 18), text=lines["2B"], font=font, fill="yellow")
+
+        # line 3
+        draw.text((5, 31), text=lines["3A"], font=font, fill="yellow")
+        draw.text((45, 31), text=lines["3B"], font=font, fill="yellow")
+        draw.text((140, 31), text=lines["3C"], font=font, fill="yellow")
+
+    return drawDebug
 
 def renderWelcomeTo(xOffset):
     def drawText(draw, *_):
@@ -254,6 +281,55 @@ def drawStartup(device, width, height):
         virtualViewport.add_hotspot(rowFour, (0, 36))
 
     return virtualViewport
+
+def drawDebugScreen(device, width, height):
+    virtualViewport = viewport(device, width=width, height=height)
+
+    versionNumber = getVersionNumber().strip()
+    
+    ipAddress = getIp()
+
+    macAddress = ':'.join(re.findall('..', '%012x' % uuid.getnode()))
+
+    debugLines = {}
+    debugLines["1A"] = "Display"
+
+    # ok let's build the strings, there's a bit of optional data here so let's do it the old fashioned way with appends
+
+    debugLines["1B"] = f"= {config['journey']['departureStation']}"
+
+    # has a destination been set? add it in!
+    if(config["journey"]["destinationStation"]):
+        debugLines["1B"] += f"->{config['journey']['destinationStation']}"
+
+    # what about a plaform?
+    if(config["journey"]["screen1Platform"]):
+        debugLines["1B"] += f" (Plat{config['journey']['screen1Platform']}) "
+    else:
+        debugLines["1B"] += " (PlatAll) "
+
+    # refresh time
+    debugLines["1B"] += f"{config['refreshTime']}s "
+    
+    # this wasn't set on my default so will wrap it in if, just in case
+    if(config['api']['operatingHours']):
+        debugLines["1B"] += f"{config['api']['operatingHours']}h"
+    
+    debugLines["2A"] = "Script"
+    debugLines["2B"] = f"= T_D_D:  {versionNumber}"
+
+    debugLines["3A"] = "Address"
+    debugLines["3B"] = f"= {macAddress}"
+    debugLines["3C"] = f"IP={ipAddress}"
+
+    theBox = snapshot(width, 64, renderDebugScreen(debugLines), interval=config["refreshTime"])
+    rowTime = snapshot(width, 14, renderTime, interval=0.1)
+
+    virtualViewport.add_hotspot(rowTime, (0, 50))
+    virtualViewport.add_hotspot(theBox, (0, 0))
+    return virtualViewport
+
+
 
 
 def drawBlankSignage(device, width, height, departureStation):
@@ -386,17 +462,35 @@ def drawSignage(device, width, height, data):
     return virtualViewport
 
 
+def getIp():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.settimeout(0)
+    try:
+        # doesn't even have to be reachable
+        s.connect(('10.254.254.254', 1))
+        IP = s.getsockname()[0]
+    except Exception:
+        IP = '127.0.0.1'
+    finally:
+        s.close()
+    return IP
+
+def getVersionNumber():
+    version_file = open('VERSION', 'r')
+    return version_file.read()
+
 try:
     version_file = open('VERSION', 'r')
 
-    print('Starting Train Departure Display v' + version_file.read())
+    print('Starting Train Departure Display v' + getVersionNumber())
     config = loadConfig()
     if config['headless']:
         print('Headless mode, running main loop without serial comms')
         serial = noop()
+        device = pygame(256, 64)
     else:
         serial = spi(port=0)
-    device = ssd1322(serial, mode="1", rotate=config['screenRotation'])
+        device = ssd1322(serial, mode="1", rotate=config['screenRotation'])
 
     if config['dualScreen']:
         serial1 = spi(port=1, gpio_DC=5, gpio_RST=6)
@@ -456,7 +550,8 @@ try:
                         nextStations = data[1]
                         station = data[2]
                         screenData = platform_filter(departureData, config["journey"]["screen1Platform"], station)
-                        virtual = drawSignage(device, width=widgetWidth, height=widgetHeight, data=screenData)
+                        # virtual = drawSignage(device, width=widgetWidth, height=widgetHeight, data=screenData)
+                        virtual = drawDebugScreen(device, width=widgetWidth, height=widgetHeight)
 
                         if config['dualScreen']:
                             screen1Data = platform_filter(departureData, config["journey"]["screen2Platform"], station)
