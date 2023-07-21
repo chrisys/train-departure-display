@@ -478,8 +478,6 @@ def getVersionNumber():
     return version_file.read()
 
 try:
-    version_file = open('VERSION', 'r')
-
     print('Starting Train Departure Display v' + getVersionNumber())
     config = loadConfig()
     if config['headless']:
