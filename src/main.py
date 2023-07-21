@@ -15,7 +15,6 @@ from luma.core.render import canvas
 from luma.oled.device import ssd1322
 from luma.core.virtual import viewport, snapshot
 from luma.core.sprite_system import framerate_regulator
-# from luma.emulator.device import pygame
 
 import socket, re, uuid
 
@@ -486,10 +485,9 @@ try:
     if config['headless']:
         print('Headless mode, running main loop without serial comms')
         serial = noop()
-        device = pygame(256, 64)
     else:
         serial = spi(port=0)
-        device = ssd1322(serial, mode="1", rotate=config['screenRotation'])
+    device = ssd1322(serial, mode="1", rotate=config['screenRotation'])
 
     if config['dualScreen']:
         serial1 = spi(port=1, gpio_DC=5, gpio_RST=6)
