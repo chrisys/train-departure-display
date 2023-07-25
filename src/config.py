@@ -1,6 +1,14 @@
 import os
 import re
 
+# validate platform number
+def parsePlatformData(platform):
+    if platform is None:
+        return ""
+    elif bool(re.match(r'^(?:\d{1,2}[A-D]|[A-D]|\d[A-D]?|\d)$', platform)):
+        return platform
+    else:
+        return ""
 
 def loadConfig():
     data = {
@@ -45,14 +53,8 @@ def loadConfig():
     data["journey"]["outOfHoursName"] = os.getenv("outOfHoursName") or "London Paddington"
     data["journey"]["stationAbbr"] = {"International": "Intl."}
     data["journey"]['timeOffset'] = os.getenv("timeOffset") or "0"
-    data["journey"]["screen1Platform"] = os.getenv("screen1Platform") or ""
-    data["journey"]["screen2Platform"] = os.getenv("screen2Platform") or ""
-
-    if data["journey"]["screen1Platform"].isnumeric() is not True:
-        data["journey"]["screen1Platform"] = ""
-
-    if data["journey"]["screen2Platform"].isnumeric() is not True:
-        data["journey"]["screen2Platform"] = ""
+    data["journey"]["screen1Platform"] = parsePlatformData(os.getenv("screen1Platform"))
+    data["journey"]["screen2Platform"] = parsePlatformData(os.getenv("screen2Platform"))
 
     data["api"]["apiKey"] = os.getenv("apiKey") or None
     data["api"]["operatingHours"] = os.getenv("operatingHours") or ""
