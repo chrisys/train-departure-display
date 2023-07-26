@@ -236,10 +236,9 @@ def loadData(apiConfig, journeyConfig, config):
     if len(runHours) == 2 and isRun(runHours[0], runHours[1]) is False:
         return False, False, journeyConfig['outOfHoursName']
 
-    if config['dualScreen']:
-        rows = "6"
-    else:
-        rows = "3"
+    # set rows to 10 (max allowed) to get as many departure as poss
+    # leaving as a variable so this can be updated if the API does
+    rows = "10"
 
     try:
         departures, stationName = loadDeparturesForStation(
