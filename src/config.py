@@ -5,7 +5,7 @@ import re
 def parsePlatformData(platform):
     if platform is None:
         return ""
-    elif bool(re.match(r'^(?:\d{1,2}[A-D]|[A-D]|\d[A-D]?|\d)$', platform)):
+    elif bool(re.match(r'^(?:\d{1,2}[A-D]|[A-D]|\d{1,2})$', platform)):
         return platform
     else:
         return ""
