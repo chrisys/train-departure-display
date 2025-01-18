@@ -30,6 +30,7 @@ The connections for one of these displays to the Raspberry Pi GPIO header are as
 | 16 | `CS` (chip select) | 24 (`BCM8 CE0`)
 
 ### Display 2 (optional)
+**Note:** when using 2 displays there's [additional configuration required](./04-configuration.md).
 | Display 2 | Connection | Raspberry Pi
 |---|---|---
 | 1 | Ground | 25 (Ground) |
