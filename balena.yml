@@ -42,12 +42,12 @@ assets:
   repository:
     type: blob.asset
     data:
-      url: 'https://github.com/chrisys/train-departure-display'
+      url: 'https://github.com/jacsaw/train-departure-display'
   logo:
     type: blob.asset
     data:
       url: >-
-        https://raw.githubusercontent.com/chrisys/train-departure-display/master/assets/logo.png
+        https://raw.githubusercontent.com/jacsaw/train-departure-display/master/assets/logo.png
 data:
   defaultDeviceType: raspberry-pi
   supportedDeviceTypes:
@@ -73,6 +73,6 @@ data:
     - firstDepartureBold: True
     - targetFPS: 70
     - fpsTime: 10
-    - debug: False
+    - debug: True
 version: 0.5.4
 
