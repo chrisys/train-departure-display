@@ -1,0 +1,115 @@
+stop_id,stop_code,stop_name,stop_desc,stop_lat,stop_lon,zone_id,stop_url,location_type,parent_station,wheelchair_boarding
+1,0NY,Grand Central,,40.752998,-73.977056,,https://new.mta.info/stations/grand-central-terminal,0,,1
+4,0HL,Harlem-125 St,,40.805157,-73.939149,,https://new.mta.info/stations/harlem-125-street,0,,1
+622,0YS,Yankees-E 153 St,,40.8253,-73.9299,,https://new.mta.info/stations/yankees-e-153-st,0,,1
+184,0HI,Highbridge Yard,,40.8359,-73.9315,,,0,,0
+9,0MH,Morris Heights,,40.854252,-73.919583,,https://new.mta.info/stations/morris-heights,0,,1
+10,0UH,University Heights,,40.862248,-73.91312,,https://new.mta.info/stations/university-heights,0,,1
+11,0MB,Marble Hill,,40.874333,-73.910941,,https://new.mta.info/stations/marble-hill,0,,2
+14,0DV,Spuyten Duyvil,,40.878245,-73.921455,,https://new.mta.info/stations/spuyten-duyvil,0,,2
+16,0RV,Riverdale,,40.903981,-73.914126,,https://new.mta.info/stations/riverdale,0,,1
+17,0LU,Ludlow,,40.924972,-73.904612,,https://new.mta.info/stations/ludlow,0,,2
+18,0YK,Yonkers,,40.935795,-73.902668,,https://new.mta.info/stations/yonkers,0,,1
+19,0GD,Glenwood,,40.950496,-73.899062,,https://new.mta.info/stations/glenwood,0,,1
+20,0GY,Greystone,,40.972705,-73.889069,,https://new.mta.info/stations/greystone,0,,1
+22,0HS,Hastings-on-Hudson,,40.994109,-73.884512,,https://new.mta.info/stations/hastings-hudson,0,,1
+23,0DF,Dobbs Ferry,,41.012459,-73.87949,,https://new.mta.info/stations/dobbs-ferry,0,,1
+24,0AR,Ardsley-on-Hudson,,41.026198,-73.876543,,https://new.mta.info/stations/ardsley-hudson,0,,1
+25,0IV,Irvington,,41.039993,-73.873083,,https://new.mta.info/stations/irvington,0,,1
+27,0TT,Tarrytown,,41.076473,-73.864563,,https://new.mta.info/stations/tarrytown,0,,1
+29,0PM,Philipse Manor,,41.09492,-73.869755,,https://new.mta.info/stations/philipse-manor,0,,1
+30,0SB,Scarborough,,41.135763,-73.866163,,https://new.mta.info/stations/scarborough,0,,1
+31,0OS,Ossining,,41.157663,-73.869281,,https://new.mta.info/stations/ossining,0,,1
+33,0HM,Croton-Harmon,,41.189903,-73.882394,,https://new.mta.info/stations/croton-harmon,0,,1
+37,0CT,Cortlandt,,41.246259,-73.921884,,https://new.mta.info/stations/cortlandt,0,,1
+39,0PE,Peekskill,,41.285962,-73.93042,,https://new.mta.info/stations/peekskill,0,,1
+40,0MN,Manitou,,41.332601,-73.970426,,https://new.mta.info/stations/manitou,0,,2
+42,0GA,Garrison,,41.38178,-73.947202,,https://new.mta.info/stations/garrison,0,,1
+43,0CS,Cold Spring,,41.415283,-73.95809,,https://new.mta.info/stations/cold-spring,0,,1
+44,0BK,Breakneck Ridge,,41.450181,-73.982449,,https://new.mta.info/stations/breakneck-ridge,0,,2
+46,0BC,Beacon,,41.504007,-73.984528,,https://new.mta.info/stations/beacon,0,,1
+49,0NM,New Hamburg,,41.587448,-73.947226,,https://new.mta.info/stations/new-hamburg,0,,1
+51,0PO,Poughkeepsie,,41.705839,-73.937946,,https://new.mta.info/stations/poughkeepsie,0,,1
+54,1ML,Melrose,,40.825761,-73.915231,,https://new.mta.info/stations/melrose,0,,2
+55,1TR,Tremont,,40.847301,-73.89955,,https://new.mta.info/stations/tremont,0,,2
+56,1FO,Fordham,,40.8615,-73.89058,,https://new.mta.info/stations/fordham,0,,1
+57,1BG,Botanical Garden,,40.866555,-73.883109,,https://new.mta.info/stations/botanical-garden,0,,1
+58,1WG,Williams Bridge,,40.878569,-73.871064,,https://new.mta.info/stations/williams-bridge,0,,2
+59,1WN,Woodlawn,,40.895361,-73.862916,,https://new.mta.info/stations/woodlawn-mnr,0,,2
+61,1WF,Wakefield,,40.905936,-73.85568,,https://new.mta.info/stations/wakefield,0,,2
+62,1MW,Mt Vernon West,,40.912142,-73.851129,,https://new.mta.info/stations/mt-vernon-west,0,,1
+64,1FW,Fleetwood,,40.92699,-73.83948,,https://new.mta.info/stations/fleetwood,0,,1
+65,1BX,Bronxville,,40.93978,-73.835208,,https://new.mta.info/stations/bronxville,0,,1
+66,1TK,Tuckahoe,,40.949393,-73.830166,,https://new.mta.info/stations/tuckahoe,0,,1
+68,1CW,Crestwood,,40.958997,-73.820564,,https://new.mta.info/stations/crestwood,0,,1
+71,1SC,Scarsdale,,40.989168,-73.808634,,https://new.mta.info/stations/scarsdale,0,,1
+72,1HA,Hartsdale,,41.010333,-73.796407,,https://new.mta.info/stations/hartsdale,0,,1
+74,1WP,White Plains,,41.032589,-73.775208,,https://new.mta.info/stations/white-plains,0,,1
+76,1NW,North White Plains,,41.049806,-73.773142,,https://new.mta.info/stations/north-white-plains,0,,1
+78,1VA,Valhalla,,41.072819,-73.772599,,https://new.mta.info/stations/valhalla,0,,1
+79,1MP,Mt Pleasant,,41.095877,-73.793822,,https://new.mta.info/stations/mt-pleasant,0,,2
+80,1HN,Hawthorne,,41.108581,-73.79625,,https://new.mta.info/stations/hawthorne,0,,1
+81,1PV,Pleasantville,,41.135222,-73.792661,,https://new.mta.info/stations/pleasantville,0,,1
+83,1CQ,Chappaqua,,41.158015,-73.774885,,https://new.mta.info/stations/chappaqua,0,,1
+84,1MK,Mt Kisco,,41.208242,-73.729778,,https://new.mta.info/stations/mount-kisco,0,,1
+85,1BH,Bedford Hills,,41.237316,-73.699936,,https://new.mta.info/stations/bedford-hills,0,,1
+86,1KA,Katonah,,41.259552,-73.684155,,https://new.mta.info/stations/katonah,0,,1
+88,1GO,Goldens Bridge,,41.294338,-73.677655,,https://new.mta.info/stations/goldens-bridge,0,,1
+89,1PY,Purdy's,,41.325775,-73.659061,,https://new.mta.info/stations/purdys,0,,1
+90,1CF,Croton Falls,,41.347722,-73.662269,,https://new.mta.info/stations/croton-falls,0,,1
+91,1BW,Brewster,,41.39447,-73.619802,,https://new.mta.info/stations/brewster,0,,1
+94,1BR,Southeast,,41.413203,-73.623787,,https://new.mta.info/stations/southeast,0,,1
+97,1PA,Patterson,,41.511827,-73.604584,,https://new.mta.info/stations/patterson,0,,1
+98,1PW,Pawling,,41.564205,-73.600524,,https://new.mta.info/stations/pawling,0,,1
+99,1AT,Appalachian Trail,,41.592871,-73.588032,,https://new.mta.info/stations/appalachian-trail,0,,2
+100,1WI,Harlem Valley-Wingdale,,41.637525,-73.57145,,https://new.mta.info/stations/harlem-valley-wingdale,0,,1
+101,1DO,Dover Plains,,41.740401,-73.576502,,https://new.mta.info/stations/dover-plains,0,,1
+176,1TM,Tenmile River,,41.779938,-73.558204,,https://new.mta.info/stations/tenmile-river,0,,1
+177,1WA,Wassaic,,41.814722,-73.562197,,https://new.mta.info/stations/wassaic,0,,1
+105,2ME,Mt Vernon East ,,40.912161,-73.832185,,https://new.mta.info/stations/mt-vernon-east,0,,1
+106,2PH,Pelham,,40.910321,-73.810242,,https://new.mta.info/stations/pelham,0,,1
+108,2NR,New Rochelle,,40.911605,-73.783807,,https://new.mta.info/stations/new-rochelle,0,,1
+110,2LA,Larchmont,,40.933394,-73.759792,,https://new.mta.info/stations/larchmont,0,,1
+111,2MA,Mamaroneck,,40.954061,-73.736125,,https://new.mta.info/stations/mamaroneck,0,,1
+112,2HS,Harrison,,40.969432,-73.712964,,https://new.mta.info/stations/harrison,0,,1
+114,2RY,Rye,,40.985922,-73.682553,,https://new.mta.info/stations/rye,0,,1
+115,2PC,Port Chester,,41.000732,-73.6647,,https://new.mta.info/stations/port-chester,0,,1
+116,2GN,Greenwich,,41.021277,-73.624621,,https://new.mta.info/stations/greenwich,0,,1
+118,2CC,Cos Cob,,41.030171,-73.598306,,https://new.mta.info/stations/cos-cob,0,,1
+120,2RS,Riverside,,41.031682,-73.588173,,https://new.mta.info/stations/riverside,0,,1
+121,2OG,Old Greenwich,,41.033817,-73.565859,,https://new.mta.info/stations/old-greenwich,0,,1
+124,2SM,Stamford,,41.046611,-73.542846,,https://new.mta.info/stations/stamford,0,,1
+153,3GB,Glenbrook,,41.070547,-73.520021,,https://new.mta.info/stations/glenbrook,0,,1
+651,3SP,Springdale MW Facility,,41.082147,-73.519675,,,0,,0
+154,3SD,Springdale,,41.08876,-73.517828,,https://new.mta.info/stations/springdale,0,,1
+155,3TH,Talmadge Hill,,41.116012,-73.498149,,https://new.mta.info/stations/talmadge-hill,0,,1
+157,3NC,New Canaan,,41.146305,-73.495626,,https://new.mta.info/stations/new-canaan,0,,1
+127,2NO,Noroton Heights,,41.069041,-73.49788,,https://new.mta.info/stations/noroton-heights,0,,1
+128,2DA,Darien,,41.076913,-73.472966,,https://new.mta.info/stations/darien,0,,1
+129,2RO,Rowayton,,41.077456,-73.445527,,https://new.mta.info/stations/rowayton,0,,1
+131,2SN,South Norwalk,,41.09673,-73.421132,,https://new.mta.info/stations/south-norwalk,0,,1
+158,4M7,Merritt 7,,41.146618,-73.427859,,https://new.mta.info/stations/merritt-7,0,,1
+160,4WI,Wilton,,41.196202,-73.432434,,https://new.mta.info/stations/wilton,0,,1
+161,4CA,Cannondale,,41.21662,-73.426703,,https://new.mta.info/stations/cannondale,0,,1
+162,4BV,Branchville,,41.26763,-73.441421,,https://new.mta.info/stations/branchville,0,,1
+163,4RD,Redding,,41.325684,-73.4338,,https://new.mta.info/stations/redding,0,,1
+164,4BE,Bethel,,41.376225,-73.418171,,https://new.mta.info/stations/bethel,0,,1
+165,4DN,Danbury,,41.396146,-73.44879,,https://new.mta.info/stations/danbury,0,,1
+133,2EN,East Norwalk,,41.103996,-73.404588,,https://new.mta.info/stations/east-norwalk,0,,2
+134,2WP,Westport,,41.118928,-73.371413,,https://new.mta.info/stations/westport,0,,1
+136,2GF,Green's Farms,,41.122265,-73.315408,,https://new.mta.info/stations/greens-farms,0,,1
+137,2SP,Southport,,41.134844,-73.28897,,https://new.mta.info/stations/southport,0,,1
+138,2FF,Fairfield,,41.143077,-73.257742,,https://new.mta.info/stations/fairfield,0,,1
+188,2FM,Fairfield-Black Rock,,41.161,-73.234336,,https://new.mta.info/stations/fairfield-black-rock,0,,1
+140,2BP,Bridgeport,,41.178677,-73.187076,,https://new.mta.info/stations/bridgeport,0,,1
+143,2SR,Stratford,,41.194255,-73.131532,,https://new.mta.info/stations/stratford,0,,1
+167,5DB,Derby-Shelton,,41.319718,-73.083548,,https://new.mta.info/stations/derby-shelton,0,,2
+168,5AN,Ansonia,,41.344156,-73.079892,,https://new.mta.info/stations/ansonia,0,,2
+169,5SY,Seymour,,41.395139,-73.072499,,https://new.mta.info/stations/seymour,0,,2
+170,5BF,Beacon Falls,,41.441752,-73.06359,,https://new.mta.info/stations/beacon-falls,0,,2
+171,5NG,Naugatuck,,41.494204,-73.052655,,https://new.mta.info/stations/naugatuck,0,,2
+172,5WB,Waterbury,,41.552728,-73.046126,,https://new.mta.info/stations/waterbury,0,,1
+145,2MI,Milford,,41.223231,-73.057647,,https://new.mta.info/stations/milford,0,,1
+190,2WH,West Haven,,41.27142,-72.963488,,https://new.mta.info/stations/west-haven,0,,1
+149,2NH,New Haven,,41.296501,-72.92829,,https://new.mta.info/stations/new-haven,0,,1
+151,2SS,New Haven-State St,,41.304979,-72.921747,,https://new.mta.info/stations/new-haven-state-street,0,,1
