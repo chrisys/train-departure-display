@@ -42,7 +42,7 @@ This project has been built to be deployed using a free [balenaCloud](https://da
 
 Once you have the free account set up, running this project is as simple as deploying it to a balenaCloud fleet. The basic premise is that you add a fleet, add your device (or devices - you can have more than one device running the same code!), and then deploy software. You can do it in just a few clicks by using the button below which will automatically guide you through adding your first fleet and deploying the code.
 
-[![balena deploy button](https://balena.io/deploy.svg)](https://dashboard.balena-cloud.com/deploy?repoUrl=https://github.com/chrisys/train-departure-display&defaultDeviceType=raspberry-pi)
+[![balena deploy button](https://balena.io/deploy.svg)](https://dashboard.balena-cloud.com/deploy?repoUrl=https://github.com/jacsaw/train-departure-display&defaultDeviceType=raspberry-pi)
 
 Once your SD card has been flashed, set it aside as we'll need it later after we have assembled the hardware.
 
