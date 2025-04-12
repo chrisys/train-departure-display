@@ -85,24 +85,6 @@ def ProcessDepartures(journeyConfig, APIOut):
         if isinstance(Services, dict):  # if there's only one service, it comes out as a dict
             Services = [Services]       # but it needs to be a list with a single element
 
-        # if there are train and bus services from this station
-        if 'lt7:busServices' in APIElements['soap:Envelope']['soap:Body']['GetDepBoardWithDetailsResponse']['GetStationBoardResult']:
-            BusServices = APIElements['soap:Envelope']['soap:Body']['GetDepBoardWithDetailsResponse']['GetStationBoardResult']['lt7:busServices']['lt7:service']
-            if isinstance(BusServices, dict):
-                BusServices = [BusServices]
-            Services = ArrivalOrder(Services + BusServices)  # sort the bus and train services into one list in order of scheduled arrival time
-
-    # if there are only bus services from this station
-    elif 'lt7:busServices' in APIElements['soap:Envelope']['soap:Body']['GetDepBoardWithDetailsResponse']['GetStationBoardResult']:
-        Services = APIElements['soap:Envelope']['soap:Body']['GetDepBoardWithDetailsResponse']['GetStationBoardResult']['lt7:busServices']['lt7:service']
-        if isinstance(Services, dict):
-            Services = [Services]
-
-    # if there are no trains or buses
-    else:
-        Services = None
-        return None, departureStationName
-
     # we create a new list of dicts to hold the services
     Departures = [{}] * len(Services)
 
@@ -200,37 +182,87 @@ def ProcessDepartures(journeyConfig, APIOut):
     return Departures, departureStationName
 
 
-def loadDeparturesForStation(journeyConfig, apiKey, rows):
+def loadDeparturesForStation(journeyConfig):
+    data = fetch_gtfs_data()
+    feed = gtfs_realtime_pb2.FeedMessage()
+    feed.ParseFromString(data)  # Decode Protobuf
+
+    now = whenever.Instant.now()
+
     if journeyConfig["departureStation"] == "":
         raise ValueError(
             "Please configure the departureStation environment variable")
 
-    if apiKey is None:
-        raise ValueError(
-            "Please configure the apiKey environment variable")
-
-    APIRequest = """
-        <x:Envelope xmlns:x="http://schemas.xmlsoap.org/soap/envelope/" xmlns:ldb="http://thalesgroup.com/RTTI/2017-10-01/ldb/" xmlns:typ4="http://thalesgroup.com/RTTI/2013-11-28/Token/types">
-        <x:Header>
-            <typ4:AccessToken><typ4:TokenValue>""" + apiKey + """</typ4:TokenValue></typ4:AccessToken>
-        </x:Header>
-        <x:Body>
-            <ldb:GetDepBoardWithDetailsRequest>
-                <ldb:numRows>""" + rows + """</ldb:numRows>
-                <ldb:crs>""" + journeyConfig["departureStation"] + """</ldb:crs>
-                <ldb:timeOffset>""" + journeyConfig["timeOffset"] + """</ldb:timeOffset>
-                <ldb:filterCrs>""" + journeyConfig["destinationStation"] + """</ldb:filterCrs>
-                <ldb:filterType>to</ldb:filterType>
-                <ldb:timeWindow>120</ldb:timeWindow>
-            </ldb:GetDepBoardWithDetailsRequest>
-        </x:Body>
-    </x:Envelope>"""
-
-    headers = {'Content-Type': 'text/xml'}
-    apiURL = "https://lite.realtime.nationalrail.co.uk/OpenLDBWS/ldb11.asmx"
-
-    APIOut = requests.post(apiURL, data=APIRequest, headers=headers).text
-
-    Departures, departureStationName = ProcessDepartures(journeyConfig, APIOut)
+    Departures, departureStationName = ProcessDepartures(journeyConfig, data)
 
     return Departures, departureStationName
+
+
+# Description: Fetch and parse GTFS Realtime data from MTA API.
+
+import csv
+
+import requests
+import whenever
+from google.transit import gtfs_realtime_pb2
+
+# Replace with your actual API key
+API_KEY = "YOUR_API_KEY" # no longer required for MTA API
+URL = "https://api-endpoint.mta.info/Dataservice/mtagtfsfeeds/mnr%2Fgtfs-mnr"
+
+HUDSON_LINE_ROUTE_ID = "1"
+BEACON_STOP = {"id": "46", "code": "0BC", "name": "Beacon"}
+GRAND_CENTRAL_STOP = {"id": "1", "code": "0NY", "name": "Grand Central Terminal"}
+PEEKSKILL_STOP = {"id": "39", "code": "0PE", "name": "Peekskill"}
+COLDSPRING_STOP = {"id": "43", "code": "0CS", "name": "Cold Spring"}
+
+with open("src/data/mnr/stops.txt", "r") as file:
+    reader = csv.DictReader(file)
+    stop_list = [row for row in reader]
+    STOPS = {stop["stop_id"]: stop["stop_name"] for stop in stop_list}
+
+def fetch_gtfs_data():
+    """Fetch GTFS Realtime data from MTA API."""
+    # headers = {"x-api-key": API_KEY}  # MTA API requires the x-api-key header # no longer required for MTA API
+    headers = {}
+    response = requests.get(URL, headers=headers)
+
+    if response.status_code == 200:
+        return response.content  # Return raw Protobuf data
+    else:
+        print(f"Error {response.status_code}: {response.text}")
+        return None
+
+def parse_gtfs_data(data):
+    """Parse GTFS Realtime Protobuf data."""
+    feed = gtfs_realtime_pb2.FeedMessage()
+    feed.ParseFromString(data)  # Decode Protobuf
+
+    now = whenever.Instant.now()
+
+    print(f"Current Time: {now.timestamp()}")
+
+    # print("GTFS Realtime Data:")
+    for entity in feed.entity:
+        if entity.HasField("trip_update"):
+            # Display Only Hudson Line Trips
+            if entity.trip_update.trip.route_id == HUDSON_LINE_ROUTE_ID:
+                trip_stops = {stu.stop_id: stu for stu in entity.trip_update.stop_time_update}
+                if BEACON_STOP["id"] in trip_stops:
+                    arrival_time = whenever.Instant.from_timestamp(trip_stops[BEACON_STOP["id"]].arrival.time)
+                    if arrival_time.subtract(hours=1) < now and arrival_time.add(hours=1) > now:
+                        trip_update = entity.trip_update
+                        print(f"Trip ID: {trip_update.trip.trip_id}")
+                        trip_direction = "Northbound" if trip_update.stop_time_update[0].stop_id == GRAND_CENTRAL_STOP["id"] else "Southbound"
+                        print(f"  Direction: {trip_direction}")
+                        for stop_time_update in trip_update.stop_time_update:
+                            print(f"  Stop: {STOPS[stop_time_update.stop_id]}")
+                            if stop_time_update.arrival.time:
+                                arrival_time = whenever.ZonedDateTime.from_timestamp(stop_time_update.arrival.time, tz="America/New_York")
+                                # print(f"    Arrival Time: {arrival_time.local().time().format_common_iso()}") # 24-hour format
+                                print(f"    Arrival Time: {arrival_time.local().time().py_time().strftime('%-I:%M %p')}")
+
+if __name__ == "__main__":
+    raw_data = fetch_gtfs_data()
+    if raw_data:
+        parse_gtfs_data(raw_data)

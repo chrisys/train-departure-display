@@ -61,24 +61,6 @@ def parse_gtfs_data(data):
                                 arrival_time = whenever.ZonedDateTime.from_timestamp(stop_time_update.arrival.time, tz="America/New_York")
                                 # print(f"    Arrival Time: {arrival_time.local().time().format_common_iso()}") # 24-hour format
                                 print(f"    Arrival Time: {arrival_time.local().time().py_time().strftime('%-I:%M %p')}")
-            # print("\nTrip Update:")
-            # trip_update = entity.trip_update
-            # print(f"  - Trip ID: {trip_update.trip.trip_id}")
-            # print(f"  - Route ID: {trip_update.trip.route_id}")
-            # for stop_time_update in trip_update.stop_time_update:
-            #     print(f"    Stop ID: {stop_time_update.stop_id}")
-            #     if stop_time_update.arrival.time:
-            #         print(f"    Arrival Time: {stop_time_update.arrival.time}")
-            #     if stop_time_update.departure.time:
-            #         print(f"    Departure Time: {stop_time_update.departure.time}")
-
-        # elif entity.HasField("vehicle"):
-        #     print("\nVehicle Position:")
-        #     vehicle = entity.vehicle
-        #     print(f"  - Vehicle ID: {vehicle.vehicle.id}")
-        #     print(f"  - Trip ID: {vehicle.trip.trip_id}")
-        #     print(f"  - Latitude: {vehicle.position.latitude}")
-        #     print(f"  - Longitude: {vehicle.position.longitude}")
 
 if __name__ == "__main__":
     raw_data = fetch_gtfs_data()

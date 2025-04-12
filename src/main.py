@@ -3,12 +3,11 @@ import time
 
 import requests
 
-from datetime import datetime
+from datetime import datetime, time
 from PIL import ImageFont, Image, ImageDraw
 
 from trains import loadDeparturesForStation
 from config import loadConfig
-from open import isRun
 
 from luma.core.interface.serial import spi, noop
 from luma.core.render import canvas
@@ -17,6 +16,20 @@ from luma.core.virtual import viewport, snapshot
 from luma.core.sprite_system import framerate_regulator
 
 import socket, re, uuid
+
+VERSION_NUMBER = "0.1"
+
+def is_time_between(begin_time, end_time, check_time=None):
+    # If check time is not given, default to current UTC time
+    check_time = check_time or datetime.now().time()
+    if begin_time < end_time:
+        return check_time >= begin_time and check_time <= end_time
+    else:  # crosses midnight
+        return check_time >= begin_time or check_time <= end_time
+
+
+def isRun(start_hour, end_hour):
+    return is_time_between(time(start_hour, 0), time(end_hour, 0))
 
 def makeFont(name, size):
     font_path = os.path.abspath(
@@ -259,9 +272,9 @@ def drawStartup(device, width, height):
     virtualViewport = viewport(device, width=width, height=height)
 
     with canvas(device):
-        nameSize = int(fontBold.getlength("UK Train Departure Display"))
+        nameSize = int(fontBold.getlength("MetroNorth Train Time"))
         poweredSize = int(fontBold.getlength("Powered by"))
-        NRESize = int(fontBold.getlength("National Rail Enquiries"))
+        NRESize = int(fontBold.getlength("Metro North Railroads"))
 
         rowOne = snapshot(width, 10, renderName((width - nameSize) / 2), interval=10)
         rowThree = snapshot(width, 10, renderPoweredBy((width - poweredSize) / 2), interval=10)
@@ -280,7 +293,7 @@ def drawStartup(device, width, height):
 def drawDebugScreen(device, width, height, screen="1", showTime=False):
     virtualViewport = viewport(device, width=width, height=height)
 
-    versionNumber = getVersionNumber().strip()
+    versionNumber = VERSION_NUMBER
     
     ipAddress = getIp()
 
@@ -327,10 +340,7 @@ def drawDebugScreen(device, width, height, screen="1", showTime=False):
 
     return virtualViewport
 
-
-
-
-def drawBlankSignage(device, width, height, departureStation):
+def drawBlankSignage(device, width: int, height: int, departureStation: str):
     global stationRenderCount, pauseCount
 
     welcomeSize = int(fontBold.getlength("Welcome to"))
@@ -360,7 +370,6 @@ def drawBlankSignage(device, width, height, departureStation):
 
     return virtualViewport
 
-
 def platform_filter(departureData, platformNumber, station):
     platformDepartures = []
     for sub in departureData:
@@ -378,7 +387,6 @@ def platform_filter(departureData, platformNumber, station):
         platformData = platformDepartures, "", station
 
     return platformData
-
 
 def drawSignage(device, width, height, data):
     global stationRenderCount, pauseCount
@@ -407,27 +415,20 @@ def drawSignage(device, width, height, data):
     if config['firstDepartureBold']:
         firstFont = fontBold
 
-    rowOneA = snapshot(
-        width - w - pw - 5, 10, renderDestination(departures[0], firstFont, '1st'), interval=config["refreshTime"])
-    rowOneB = snapshot(w, 10, renderServiceStatus(
-        departures[0]), interval=10)
+    rowOneA = snapshot(width - w - pw - 5, 10, renderDestination(departures[0], firstFont, '1st'), interval=config["refreshTime"])
+    rowOneB = snapshot(w, 10, renderServiceStatus(departures[0]), interval=10)
     rowOneC = snapshot(pw, 10, renderPlatform(departures[0]), interval=config["refreshTime"])
     rowTwoA = snapshot(callingWidth, 10, renderCallingAt, interval=config["refreshTime"])
-    rowTwoB = snapshot(width - callingWidth, 10,
-                       renderStations(firstDepartureDestinations), interval=0.02)
+    rowTwoB = snapshot(width - callingWidth, 10, renderStations(firstDepartureDestinations), interval=0.02)
 
     if len(departures) > 1:
-        rowThreeA = snapshot(width - w - pw, 10, renderDestination(
-            departures[1], font, '2nd'), interval=config["refreshTime"])
-        rowThreeB = snapshot(w, 10, renderServiceStatus(
-            departures[1]), interval=config["refreshTime"])
+        rowThreeA = snapshot(width - w - pw, 10, renderDestination(departures[1], font, '2nd'), interval=config["refreshTime"])
+        rowThreeB = snapshot(w, 10, renderServiceStatus(departures[1]), interval=config["refreshTime"])
         rowThreeC = snapshot(pw, 10, renderPlatform(departures[1]), interval=config["refreshTime"])
 
     if len(departures) > 2:
-        rowFourA = snapshot(width - w - pw, 10, renderDestination(
-            departures[2], font, '3rd'), interval=10)
-        rowFourB = snapshot(w, 10, renderServiceStatus(
-            departures[2]), interval=10)
+        rowFourA = snapshot(width - w - pw, 10, renderDestination(departures[2], font, '3rd'), interval=10)
+        rowFourB = snapshot(w, 10, renderServiceStatus(departures[2]), interval=10)
         rowFourC = snapshot(pw, 10, renderPlatform(departures[2]), interval=config["refreshTime"])
 
     rowTime = snapshot(width, 14, renderTime, interval=0.1)
@@ -472,12 +473,9 @@ def getIp():
         s.close()
     return IP
 
-def getVersionNumber():
-    version_file = open('VERSION', 'r')
-    return version_file.read()
 
 try:
-    print('Starting Train Departure Display v' + getVersionNumber())
+    print('MetroNorth Train Time v' + 1)
     config = loadConfig()
     if config['headless']:
         print('Headless mode, running main loop without serial comms')
@@ -486,9 +484,7 @@ try:
         serial = spi(port=0)
     device = ssd1322(serial, mode="1", rotate=config['screenRotation'])
 
-    if config['dualScreen']:
-        serial1 = spi(port=1, gpio_DC=5, gpio_RST=6)
-        device1 = ssd1322(serial1, mode="1", rotate=config['screenRotation'])
+
     font = makeFont("Dot Matrix Regular.ttf", 10)
     fontBold = makeFont("Dot Matrix Bold.ttf", 10)
     fontBoldTall = makeFont("Dot Matrix Bold Tall.ttf", 10)
@@ -507,17 +503,11 @@ try:
         # render screen and sleep for specified seconds
         virtual = drawDebugScreen(device, width=widgetWidth, height=widgetHeight)
         virtual.refresh()
-        if config['dualScreen']:
-            virtual = drawDebugScreen(device, width=widgetWidth, height=widgetHeight, screen="2")
-            virtual.refresh()
         time.sleep(config['debug'])
     else:
         # display NRE attribution while data loads
         virtual = drawStartup(device, width=widgetWidth, height=widgetHeight)
         virtual.refresh()
-        if config['dualScreen']:
-            virtual = drawStartup(device1, width=widgetWidth, height=widgetHeight)
-            virtual.refresh()
         if config['headless'] is not True:
             time.sleep(5)
 
@@ -531,10 +521,10 @@ try:
 
     while True:
         with regulator:
+            # isRun short utility function to take 2 times and see if the current time is between them
+            # this is used to blank the screen between certain hours
             if len(blankHours) == 2 and isRun(blankHours[0], blankHours[1]):
                 device.clear()
-                if config['dualScreen']:
-                    device1.clear()
                 time.sleep(10)
             else:
                 if timeNow - timeFPS >= config['fpsTime']:
@@ -545,16 +535,12 @@ try:
                     if config["debug"] == True:
                         print(config["debug"])
                         virtual = drawDebugScreen(device, width=widgetWidth, height=widgetHeight, showTime=True)
-                        if config['dualScreen']:
-                            virtual1 = drawDebugScreen(device1, width=widgetWidth, height=widgetHeight, showTime=True, screen="2")
+                        
                     else:
                         data = loadData(config["api"], config["journey"], config)
                         if data[0] is False:
                             virtual = drawBlankSignage(
                                 device, width=widgetWidth, height=widgetHeight, departureStation=data[2])
-                            if config['dualScreen']:
-                                virtual1 = drawBlankSignage(
-                                    device1, width=widgetWidth, height=widgetHeight, departureStation=data[2])
                         else:
                             departureData = data[0]
                             nextStations = data[1]
@@ -563,16 +549,11 @@ try:
                             virtual = drawSignage(device, width=widgetWidth, height=widgetHeight, data=screenData)
                             # virtual = drawDebugScreen(device, width=widgetWidth, height=widgetHeight, showTime=True)
 
-                            if config['dualScreen']:
-                                screen1Data = platform_filter(departureData, config["journey"]["screen2Platform"], station)
-                                virtual1 = drawSignage(device1, width=widgetWidth, height=widgetHeight, data=screen1Data)
-
                     timeAtStart = time.time()
 
                 timeNow = time.time()
                 virtual.refresh()
-                if config['dualScreen']:
-                    virtual1.refresh()
+
 
 except KeyboardInterrupt:
     pass
