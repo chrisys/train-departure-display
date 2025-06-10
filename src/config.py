@@ -22,21 +22,21 @@ def loadConfig():
     data["screenRotation"] = int(os.getenv("screenRotation") or 2)
     data["screenBlankHours"] = os.getenv("screenBlankHours") or ""
     data["headless"] = False
-    if os.getenv("headless") == "True":
+    if os.getenv("headless", "").upper() == "TRUE":
         data["headless"] = True
 
     data["debug"] = False
-    if os.getenv("debug") == "True":
+    if os.getenv("debug", "").upper() == "TRUE":
         data["debug"] = True
     else:
         if os.getenv("debug") and os.getenv("debug").isnumeric():
             data["debug"] = int(os.getenv("debug"))
 
     data["dualScreen"] = False
-    if os.getenv("dualScreen") == "True":
+    if os.getenv("dualScreen", "").upper() == "TRUE":
         data["dualScreen"] = True
     data["firstDepartureBold"] = True
-    if os.getenv("firstDepartureBold") == "False":
+    if os.getenv("firstDepartureBold", "").upper() == "FALSE":
         data["firstDepartureBold"] = False
     data["hoursPattern"] = re.compile("^((2[0-3]|[0-1]?[0-9])-(2[0-3]|[0-1]?[0-9]))$")
 
@@ -47,7 +47,7 @@ def loadConfig():
         data["journey"]["destinationStation"] = ""
 
     data["journey"]["individualStationDepartureTime"] = False
-    if os.getenv("individualStationDepartureTime") == "True":
+    if os.getenv("individualStationDepartureTime", "").upper() == "TRUE":
         data["journey"]["individualStationDepartureTime"] = True
 
     data["journey"]["outOfHoursName"] = os.getenv("outOfHoursName") or "London Paddington"
@@ -60,7 +60,7 @@ def loadConfig():
     data["api"]["operatingHours"] = os.getenv("operatingHours") or ""
 
     data["showDepartureNumbers"] = False
-    if os.getenv("showDepartureNumbers") == "True":
+    if os.getenv("showDepartureNumbers", "").upper() == "TRUE":
         data["showDepartureNumbers"] = True
 
     return data
