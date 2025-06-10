@@ -214,6 +214,12 @@ def renderName(xOffset):
 
     return drawText
 
+def renderVersion(xOffset):
+    def drawText(draw, *_):
+        text = "v" + getVersionNumber().strip() + " " + getVersionDate()
+        draw.text((int(xOffset), 0), text=text, font=font, fill="yellow")
+
+    return drawText
 
 def renderDepartureStation(departureStation, xOffset):
     def draw(draw, *_):
@@ -260,10 +266,12 @@ def drawStartup(device, width, height):
 
     with canvas(device):
         nameSize = int(fontBold.getlength("UK Train Departure Display"))
+        versionSize = int(font.getlength("v" + getVersionNumber().strip() + " " + getVersionDate()))
         poweredSize = int(fontBold.getlength("Powered by"))
         NRESize = int(fontBold.getlength("National Rail Enquiries"))
 
         rowOne = snapshot(width, 10, renderName((width - nameSize) / 2), interval=10)
+        rowTwo = snapshot(width, 10, renderVersion((width - versionSize) / 2), interval=10)
         rowThree = snapshot(width, 10, renderPoweredBy((width - poweredSize) / 2), interval=10)
         rowFour = snapshot(width, 10, renderNRE((width - NRESize) / 2), interval=10)
 
@@ -272,6 +280,7 @@ def drawStartup(device, width, height):
                 virtualViewport.remove_hotspot(hotspot, xy)
 
         virtualViewport.add_hotspot(rowOne, (0, 0))
+        virtualViewport.add_hotspot(rowTwo, (0, 12))
         virtualViewport.add_hotspot(rowThree, (0, 24))
         virtualViewport.add_hotspot(rowFour, (0, 36))
 
@@ -387,6 +396,7 @@ def drawSignage(device, width, height, data):
 
     status = "Exp 00:00"
     callingAt = "Calling at: "
+    platform = "Plat 888"
 
     departures, firstDepartureDestinations, departureStation = data
 
@@ -397,7 +407,7 @@ def drawSignage(device, width, height, data):
 
     # First measure the text size
     w = int(font.getlength(status))
-    pw = int(font.getlength("Plat 88"))
+    pw = int(font.getlength(platform))
 
     if len(departures) == 0:
         noTrains = drawBlankSignage(device, width=width, height=height, departureStation=departureStation)
@@ -475,6 +485,12 @@ def getIp():
 def getVersionNumber():
     version_file = open('VERSION', 'r')
     return version_file.read()
+
+def getVersionDate():
+    modification_timestamp = os.path.getmtime('VERSION')
+
+    # Convert the timestamp to a readable datetime object
+    return datetime.fromtimestamp(modification_timestamp).strftime('%d %b %Y')
 
 try:
     print('Starting Train Departure Display v' + getVersionNumber())

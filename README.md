@@ -15,8 +15,6 @@
 
 **Check out [the documentation](/docs/01-getting-started.md) for full hardware/software requirements and complete build guide.**
 
-**A few kits are available! [See here for details](https://github.com/chrisys/train-departure-display/issues/94)**
-
 - [Getting Started](/docs/01-getting-started.md)
 - [Connecting the display to the Pi](/docs/02-connecting-the-display-to-the-pi.md)
 - [Assembling the Case](/docs/03-assembling-the-case.md)
