@@ -10,6 +10,8 @@ from trains import loadDeparturesForStation
 from config import loadConfig
 from open import isRun
 
+import RPi.GPIO as GPIO
+
 from luma.core.interface.serial import spi, noop
 from luma.core.render import canvas
 from luma.oled.device import ssd1322
@@ -499,7 +501,9 @@ try:
         print('Headless mode, running main loop without serial comms')
         serial = noop()
     else:
+        GPIO.setwarnings(False)
         serial = spi(port=0)
+        
     device = ssd1322(serial, mode="1", rotate=config['screenRotation'])
 
     if config['dualScreen']:
