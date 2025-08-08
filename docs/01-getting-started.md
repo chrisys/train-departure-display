@@ -4,7 +4,7 @@ This project is designed to be easily reproducible by anyone with basic hardware
 
 I have detailed the process of reproducing the project and building a unit exactly as I have done for myself, but you can definitely simplify the project if you don't want the same custom case.
 
-**Solding not required!** Although in the *ideal* setup, the connections between the display and the Raspberry Pi would be soldered in order to keep the profile of the two boards as low as possible without header pins, it is totally possible to make the connections using jumper-jerky/dupont wires and avoid the need to solder anything.
+**Soldering not required!** Although in the *ideal* setup, the connections between the display and the Raspberry Pi would be soldered in order to keep the profile of the two boards as low as possible without header pins, it is totally possible to make the connections using jumper-jerky/dupont wires and avoid the need to solder anything.
 
 ## Hardware required
 
@@ -24,7 +24,8 @@ I have detailed the process of reproducing the project and building a unit exact
 
 For the screws, I usually purchase screw sets [like this from Amazon](https://www.amazon.co.uk/gp/product/B0915DPHV2) which last a while and provide for many different projects.
 
-I have used [displays from AliExpress](https://www.aliexpress.com/item/32988174566.html) successfully, but any other with the same pixel dimensions and controller chip should also work.
+I have used [displays from AliExpress](https://www.aliexpress.com/item/33012440441.html)* successfully, but any other with the same pixel dimensions and controller chip should also work.
+* This particular one comes with header pins pre-soldered, which may cause problems if you are using the 3D printed case.
 
 This project is designed to run using a Raspberry Pi Zero W or Zero 2 W and therefore the case is designed to fit that device. If you intend to create your own case or not use a case, other Raspberry Pi devices will also work.
 
