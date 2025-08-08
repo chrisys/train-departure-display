@@ -2,3 +2,5 @@ luma.oled
 timeloop
 requests
 xmltodict
+RPi.GPIO
+spidev
