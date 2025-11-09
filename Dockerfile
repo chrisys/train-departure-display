@@ -1,11 +1,7 @@
-FROM python:3.12-alpine3.22 as builder
+FROM python:3.13-slim-bookworm as builder
 
-RUN apk add --no-cache \
-        freetype-dev \
-        libjpeg-turbo-dev \
-        gcc \
-        musl-dev \
-        linux-headers 
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential
 
 WORKDIR /usr/src/app
 
@@ -14,15 +10,10 @@ WORKDIR /usr/src/app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-FROM python:3.12-alpine3.22
-
-RUN apk add --no-cache \
-        freetype-dev \
-        libjpeg-turbo-dev \
-        tzdata
+FROM python:3.13-slim-bookworm
 
 # Copy in the compiled packages
-COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
+COPY --from=builder /usr/local/lib/python3.13/site-packages /usr/local/lib/python3.13/site-packages
 
 WORKDIR /usr/src/app
 COPY src ./src
