@@ -112,41 +112,53 @@ def cachedBitmapText(text, font):
     return txt_width, txt_height, bitmap
 
 
-pixelsLeft = 1
-pixelsUp = 0
-hasElevated = 0
-pauseCount = 0
+# Create a class to hold scroll state for each screen
+class ScrollState:
+    def __init__(self):
+        self.pixelsLeft = 1
+        self.pixelsUp = 0
+        self.hasElevated = 0
+        self.pauseCount = 0
+        self.stationRenderCount = 0
 
 
-def renderStations(stations):
+# Dictionary to store scroll state for each screen
+scrollStates = {}
+
+
+def renderStations(stations, screen_id='default'):
     def drawText(draw, *_):
-        global stationRenderCount, pauseCount, pixelsLeft, pixelsUp, hasElevated
+        # Get or create scroll state for this screen
+        if screen_id not in scrollStates:
+            scrollStates[screen_id] = ScrollState()
+        
+        state = scrollStates[screen_id]
 
-        if len(stations) == stationRenderCount - 5:
-            stationRenderCount = 0
+        if len(stations) == state.stationRenderCount - 5:
+            state.stationRenderCount = 0
 
         txt_width, txt_height, bitmap = cachedBitmapText(stations, font)
 
-        if hasElevated:
+        if state.hasElevated:
             # slide the bitmap left until it's fully out of view
-            draw.bitmap((pixelsLeft - 1, 0), bitmap, fill="yellow")
-            if -pixelsLeft > txt_width and pauseCount < 8:
-                pauseCount += 1
-                pixelsLeft = 0
-                hasElevated = 0
+            draw.bitmap((state.pixelsLeft - 1, 0), bitmap, fill="yellow")
+            if -state.pixelsLeft > txt_width and state.pauseCount < 8:
+                state.pauseCount += 1
+                state.pixelsLeft = 0
+                state.hasElevated = 0
             else:
-                pauseCount = 0
-                pixelsLeft = pixelsLeft - 1
+                state.pauseCount = 0
+                state.pixelsLeft = state.pixelsLeft - 1
         else:
             # slide the bitmap up from the bottom of its viewport until it's fully in view
-            draw.bitmap((0, txt_height - pixelsUp), bitmap, fill="yellow")
-            if pixelsUp == txt_height:
-                pauseCount += 1
-                if pauseCount > 20:
-                    hasElevated = 1
-                    pixelsUp = 0
+            draw.bitmap((0, txt_height - state.pixelsUp), bitmap, fill="yellow")
+            if state.pixelsUp == txt_height:
+                state.pauseCount += 1
+                if state.pauseCount > 20:
+                    state.hasElevated = 1
+                    state.pixelsUp = 0
             else:
-                pixelsUp = pixelsUp + 1
+                state.pixelsUp = state.pixelsUp + 1
 
     return drawText
 
@@ -342,8 +354,6 @@ def drawDebugScreen(device, width, height, screen="1", showTime=False):
 
 
 def drawBlankSignage(device, width, height, departureStation):
-    global stationRenderCount, pauseCount
-
     welcomeSize = int(fontBold.getlength("Welcome to"))
     stationSize = int(fontBold.getlength(departureStation))
 
@@ -391,9 +401,7 @@ def platform_filter(departureData, platformNumber, station):
     return platformData
 
 
-def drawSignage(device, width, height, data):
-    global stationRenderCount, pauseCount
-
+def drawSignage(device, width, height, data, screen_id='default'):
     virtualViewport = viewport(device, width=width, height=height)
 
     status = "Exp 00:00"
@@ -426,7 +434,7 @@ def drawSignage(device, width, height, data):
     rowOneC = snapshot(pw, 10, renderPlatform(departures[0]), interval=config["refreshTime"])
     rowTwoA = snapshot(callingWidth, 10, renderCallingAt, interval=config["refreshTime"])
     rowTwoB = snapshot(width - callingWidth, 10,
-                       renderStations(firstDepartureDestinations), interval=0.02)
+                       renderStations(firstDepartureDestinations, screen_id), interval=0.02)
 
     if len(departures) > 1:
         rowThreeA = snapshot(width - w - pw, 10, renderDestination(
@@ -447,9 +455,6 @@ def drawSignage(device, width, height, data):
     if len(virtualViewport._hotspots) > 0:
         for vhotspot, xy in virtualViewport._hotspots:
             virtualViewport.remove_hotspot(vhotspot, xy)
-
-    stationRenderCount = 0
-    pauseCount = 0
 
     virtualViewport.add_hotspot(rowOneA, (0, 0))
     virtualViewport.add_hotspot(rowOneB, (width - w, 0))
@@ -517,8 +522,6 @@ try:
     widgetWidth = 256
     widgetHeight = 64
 
-    stationRenderCount = 0
-    pauseCount = 0
     loop_count = 0
 
     regulator = framerate_regulator(config['targetFPS'])
@@ -580,12 +583,11 @@ try:
                             nextStations = data[1]
                             station = data[2]
                             screenData = platform_filter(departureData, config["journey"]["screen1Platform"], station)
-                            virtual = drawSignage(device, width=widgetWidth, height=widgetHeight, data=screenData)
-                            # virtual = drawDebugScreen(device, width=widgetWidth, height=widgetHeight, showTime=True)
+                            virtual = drawSignage(device, width=widgetWidth, height=widgetHeight, data=screenData, screen_id='screen1')
 
                             if config['dualScreen']:
                                 screen1Data = platform_filter(departureData, config["journey"]["screen2Platform"], station)
-                                virtual1 = drawSignage(device1, width=widgetWidth, height=widgetHeight, data=screen1Data)
+                                virtual1 = drawSignage(device1, width=widgetWidth, height=widgetHeight, data=screen1Data, screen_id='screen2')
 
                     timeAtStart = time.time()
 
@@ -600,3 +602,4 @@ except ValueError as err:
     print(f"Error: {err}")
 # except KeyError as err:
 #     print(f"Error: Please ensure the {err} environment variable is set")
+
