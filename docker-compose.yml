@@ -1,0 +1,13 @@
+version: "2"
+
+services:
+  train-departure-display:
+    network_mode: "host"
+    privileged: true
+    build: .
+    ports:
+      - "80:80"
+    volumes:
+      - /run/dbus:/host/run/dbus:ro
+    labels:
+      io.balena.features.dbus: "1"
