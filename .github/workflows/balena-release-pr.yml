@@ -14,7 +14,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: balena-io/deploy-to-balena-action@master
+        id: balena_deploy
         with:
           balena_token: ${{ secrets.BALENA_TOKEN }}
           fleet: gh_chrisys/train-departure-display
           note: "Release PR #${{ github.event.pull_request.number }} • ${{ github.event.pull_request.head.sha }}"
+
+      - uses: balena-io/upload-balena-release-asset@main
+        with:
+          balena-token: ${{ secrets.BALENA_TOKEN }}
+          release-id: ${{ steps.balena_deploy.outputs.release_id }}
+          path: CHANGELOG.md
+          overwrite: true
