@@ -26,6 +26,6 @@ COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/pytho
 
 WORKDIR /usr/src/app
 COPY src ./src
-COPY VERSION .
+COPY version.txt .
 
 CMD ["python3", "src/main.py"]

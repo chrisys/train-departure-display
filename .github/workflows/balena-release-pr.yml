@@ -1,0 +1,20 @@
+name: balenaCloud build (release-please PR sync)
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+    branches: [main]
+
+jobs:
+  balena_cloud_build:
+    environment: balenaCloud app
+    # Only run for Release Please PRs (default label)
+    if: startsWith(github.head_ref, 'release-please')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: balena-io/deploy-to-balena-action@master
+        with:
+          balena_token: ${{ secrets.BALENA_TOKEN }}
+          fleet: gh_chrisys/train-departure-display
+          note: "Release PR #${{ github.event.pull_request.number }} • ${{ github.event.pull_request.head.sha }}"

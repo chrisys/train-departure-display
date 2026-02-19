@@ -485,11 +485,11 @@ def getIp():
     return IP
 
 def getVersionNumber():
-    version_file = open('VERSION', 'r')
+    version_file = open('version.txt', 'r')
     return version_file.read()
 
 def getVersionDate():
-    modification_timestamp = os.path.getmtime('VERSION')
+    modification_timestamp = os.path.getmtime('version.txt')
 
     # Convert the timestamp to a readable datetime object
     return datetime.fromtimestamp(modification_timestamp).strftime('%d %b %Y')
