@@ -1,20 +1,29 @@
+# Changelog
+
+## [0.6.3](https://github.com/chrisys/train-departure-display/compare/v0.6.2...v0.6.3) (2026-02-19)
+
+
+### Bug Fixes
+
+* **dualscreen:** Independent scrolling of 'calling at' ([5075551](https://github.com/chrisys/train-departure-display/commit/50755515d432eb3405880d5d6d76b869b2c80ac4))
+* Update requirements.txt to remove security issues ([06dd404](https://github.com/chrisys/train-departure-display/commit/06dd40471b25b7151f5d60652634bd504fae7686))
 
 From this point onwards the project was moved to use Release Please and conventional commits. The change log below is retained for historical purposes.
 
 ---
 
-# v0.6.2
+## v0.6.2
 ## (2025-08-08)
 
 * Resolve dependency issue with RPi.GPIO and spidev [Chris Crocker-White]
 
-# v0.6.1
+## v0.6.1
 ## (2025-08-08)
 
 * Update documentation fixes #136 [steco]
 * Suppress "GPIO in use" error fixes #111 [steco]
 
-# v0.6.0
+## v0.6.0
 ## (2025-06-19)
 
 * Migrate away from deprecated balenalib base images (and also reduce image size) fixes #138 [Chris Crocker-White]
@@ -23,32 +32,32 @@ From this point onwards the project was moved to use Release Please and conventi
 * Add version and date to startup fixes #75 [Chris Crocker-White]
 * Remove reference to kits from README.md closes #94 [Chris Crocker-White]
 
-# v0.5.5
+## v0.5.5
 ## (2024-02-27)
 
 * Fix regex for platform numbers above 10 [CalamityJames]
 
-# v0.5.4
+## v0.5.4
 ## (2023-07-26)
 
 * Add alternate validation, allowing use of non-numeric platforms [CalamityJames]
 
-# v0.5.3
+## v0.5.3
 ## (2023-07-26)
 
 * Load 10 rows by default, to get the most from the API call [CalamityJames]
 
-# v0.5.2
+## v0.5.2
 ## (2023-07-22)
 
 * New feature: Debug screen support [CalamityJames]
 
-# v0.5.1
+## v0.5.1
 ## (2023-07-04)
 
 * Readded `tzdata` to set timezone, fixes #36 again, sorry! [CalamityJames]
 
-# v0.5.0
+## v0.5.0
 ## (2023-06-29)
 
 * Upgrade: Switch Python version and base OS: Python 3.11 on Alpine
@@ -63,109 +72,109 @@ From this point onwards the project was moved to use Release Please and conventi
 * Performance: All "in-loop" TTF font rendering is now cached (reduce CPU)
 * Fix: screen1Platform/screen2Platform being required incorrectly on the env
 
-# v0.4.0
+## v0.4.0
 ## (2023-02-18)
 
 * Fix: Catches request errors to draw blank signage [BeauAgst]
 * New feature: Add individualStationDepartureTime option [BeauAgst]
 * Fix: Correct some boolean config vars defaulting to true [Chris Crocker-White]
 
-# v0.3.8
+## v0.3.8
 ## (2023-01-26)
 
 * Correctly handle when platform numbers set to null [Chris Crocker-White]
 
-# v0.3.7
+## v0.3.7
 ## (2023-01-20)
 
 * Correct crash when destinationStation set to null [Chris Crocker-White]
 
-# v0.3.6
+## v0.3.6
 ## (2023-01-13)
 
 * Remove usage of deprecated Pillow method [Chris Crocker-White]
 
-# v0.3.5
+## v0.3.5
 ## (2023-01-13)
 
 * Update balena.yml template variables [Chris Crocker-White]
 
-# v0.3.4
+## v0.3.4
 ## (2022-05-31)
 
 * Add assembly guide [Chris Crocker-White]
 
-# v0.3.3
+## v0.3.3
 ## (2022-05-30)
 
 * Correct angle on desk mount lugs [Chris Crocker-White]
 
-# v0.3.2
+## v0.3.2
 ## (2022-05-16)
 
 * Default to all-day operation fixes #72 [Chris Crocker-White]
 
-# v0.3.1
+## v0.3.1
 ## (2022-03-08)
 
 * Adjust tolerances between case parts [Chris Crocker-White]
 
-# v0.3.0
+## v0.3.0
 ## (2021-12-09)
 
 * Add modular case design [Chris Crocker-White]
 
-# v0.2.0
+## v0.2.0
 ## (2021-12-09)
 
 * Enable dual display output [Lee Porte]
 
-# v0.1.3
+## v0.1.3
 ## (2021-12-09)
 
 * Set Dockerfile to use raspberry-pi base image [Chris Crocker-White]
 
-# v0.1.2
+## v0.1.2
 ## (2021-12-08)
 
 * Update timeOffset key [Lee Porte]
 
-# v0.1.1
+## v0.1.1
 ## (2021-10-29)
 
 * Add screenBlankHours [Chris Crocker-White]
 
-# v0.1.0
+## v0.1.0
 ## (2021-10-29)
 
 * Change to National Rail Enquiries API [Chris Crocker-White]
 
-# v0.0.15
+## v0.0.15
 ## (2021-08-02)
 
 * Add `tzdata` to set timezone, fixes #36 [Chris Crocker-White]
 
-# v0.0.14
+## v0.0.14
 ## (2021-07-29)
 
 * Reduce container size (~315MB to ~87MB) [Chris Crocker-White]
 
-# v0.0.13
+## v0.0.13
 ## (2021-07-12)
 
 * Relocate update data log [Chris Crocker-White]
 
-# v0.0.12
+## v0.0.12
 ## (2021-07-12)
 
 * Add logging, adjust framerate [Chris Crocker-White]
 
-# v0.0.11
+## v0.0.11
 ## (2021-07-09)
 
 * Fix outOfHoursName config [Chris Crocker-White]
 
-# v0.0.10
+## v0.0.10
 ## (2021-07-08)
 
 * Report API server errors fixes #29, fixes #32 [Chris Crocker-White]
@@ -173,42 +182,42 @@ From this point onwards the project was moved to use Release Please and conventi
 * Added ability to filter by platform closes #7 [Chris Crocker-White]
 * Reduce container size (~780MB to ~300MB) [Chris Crocker-White]
 
-# v0.0.9
+## v0.0.9
 ## (2021-05-20)
 
 * Mark fleet as not joinable [Chris Crocker-White]
 
-# v0.0.8
+## v0.0.8
 ## (2021-04-01)
 
 * docs: add query params to deploy link [Aaron Shaw]
 
-# v0.0.7
+## v0.0.7
 ## (2021-02-01)
 
 * Update balena.yml [Chris Crocker-White]
 
-# v0.0.6
+## v0.0.6
 ## (2021-01-01)
 
 * Add balena.yml and logo for hub [Chris Crocker-White]
 
-# v0.0.5
+## v0.0.5
 ## (2020-09-08)
 
 * Add balena.yml with device and env var presets [Chris Crocker-White]
 
-# v0.0.4
+## v0.0.4
 ## (2020-09-08)
 
 * Add DWB button for easier deployment [Chris Crocker-White]
 
-# v0.0.3
+## v0.0.3
 ## (2020-05-26)
 
 * Unlock framerate [Chris Crocker-White]
 
-# v0.0.2
+## v0.0.2
 ## (2020-05-26)
 
 * Add repo.yml [Chris Crocker-White]
