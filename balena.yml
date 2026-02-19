@@ -6,43 +6,64 @@ description: >-
 post-provisioning: >-
   ![](https://raw.githubusercontent.com/chrisys/train-departure-display/main/assets/full-logo.png)
 
-  **A replica, near real-time, miniature UK railway station train departure sign based upon a Raspberry Pi Zero and 256x64 SPI OLED display(s). Uses the publicly available [OpenLDBWS API by National Rail Enquiries](https://www.nationalrail.co.uk/).**
+  **A replica, near real-time, miniature UK railway station train departure sign
+  based upon a Raspberry Pi Zero and 256x64 SPI OLED display(s). Uses the
+  publicly available [OpenLDBWS API by National Rail
+  Enquiries](https://www.nationalrail.co.uk/).**
 
   ## Highlights
 
-  - **See local departures**: Display the depatures from your local station at home for up to date train information.
+  - **See local departures**: Display the depatures from your local station at
+  home for up to date train information.
 
-  - **3D-printable cases**: Print your own miniature case to keep everything tidy - both desktop and 'hanging' style available.
+  - **3D-printable cases**: Print your own miniature case to keep everything
+  tidy - both desktop and 'hanging' style available.
 
-  - **Dual display support**: Run two displays each showing departures from different platforms from a single Raspberry Pi.
+  - **Dual display support**: Run two displays each showing departures from
+  different platforms from a single Raspberry Pi.
 
   ![](https://raw.githubusercontent.com/chrisys/train-departure-display/main/assets/blog-header.jpg)
   ![](https://raw.githubusercontent.com/chrisys/train-departure-display/main/docs/images/completed-unit.jpg)
 
   ## How to build
 
-  **Check out [the documentation](https://github.com/chrisys/train-departure-display/blob/main/docs/01-getting-started.md) for full hardware/software requirements and complete build guide.**
+  **Check out [the
+  documentation](https://github.com/chrisys/train-departure-display/blob/main/docs/01-getting-started.md)
+  for full hardware/software requirements and complete build guide.**
 
-  - [Getting Started](https://github.com/chrisys/train-departure-display/blob/main/docs/01-getting-started.md)
+  - [Getting
+  Started](https://github.com/chrisys/train-departure-display/blob/main/docs/01-getting-started.md)
 
-  - [Connecting the display to the Pi](https://github.com/chrisys/train-departure-display/blob/main/docs/02-connecting-the-display-to-the-pi.md)
+  - [Connecting the display to the
+  Pi](https://github.com/chrisys/train-departure-display/blob/main/docs/02-connecting-the-display-to-the-pi.md)
 
-  - [Assembling the Case](https://github.com/chrisys/train-departure-display/blob/main/docs/03-assembling-the-case.md)
+  - [Assembling the
+  Case](https://github.com/chrisys/train-departure-display/blob/main/docs/03-assembling-the-case.md)
 
-  - [Configuration](https://github.com/chrisys/train-departure-display/blob/main/docs/04-configuration.md)
+  -
+  [Configuration](https://github.com/chrisys/train-departure-display/blob/main/docs/04-configuration.md)
 
   ## Credits
 
-  A big thanks to [Chris Hutchinson](https://github.com/chrishutchinson/) who originally started this project and inspired me to develop it further. [Blake](https://github.com/ghostseven) made some further improvements and this project was forked from [there](https://github.com/ghostseven/UK-Train-Departure-Display).
+  A big thanks to [Chris Hutchinson](https://github.com/chrishutchinson/) who
+  originally started this project and inspired me to develop it further.
+  [Blake](https://github.com/ghostseven) made some further improvements and this
+  project was forked from
+  [there](https://github.com/ghostseven/UK-Train-Departure-Display).
 
-  The fonts used were painstakingly put together by `DanielHartUK` and can be found on GitHub at https://github.com/DanielHartUK/Dot-Matrix-Typeface - A huge thanks for making that resource available!
+  The fonts used were painstakingly put together by `DanielHartUK` and can be
+  found on GitHub at https://github.com/DanielHartUK/Dot-Matrix-Typeface - A
+  huge thanks for making that resource available!
 
-  Thanks to [@jajasilver](https://github.com/jajsilver/UK-Train-Departure-Display-NRE) and [@MatthewAscough](https://github.com/MatthewAscough/UK-Train-Departure-Display-NRE) for forming the basis of the OpenLDBWS implementation.
+  Thanks to
+  [@jajasilver](https://github.com/jajsilver/UK-Train-Departure-Display-NRE) and
+  [@MatthewAscough](https://github.com/MatthewAscough/UK-Train-Departure-Display-NRE)
+  for forming the basis of the OpenLDBWS implementation.
 assets:
   repository:
     type: blob.asset
     data:
-      url: 'https://github.com/chrisys/train-departure-display'
+      url: https://github.com/chrisys/train-departure-display
   logo:
     type: blob.asset
     data:
@@ -63,16 +84,15 @@ data:
     - operatingHours: 8-22
     - screenBlankHours: 1-6
     - screenRotation: 2
-    - dualScreen: False
-    - destinationStation:
+    - dualScreen: false
+    - destinationStation: null
     - timeOffset: 0
-    - screen1Platform:
-    - screen2Platform:
-    - individualStationDepartureTime: False
-    - showDepartureNumbers: False
-    - firstDepartureBold: True
+    - screen1Platform: null
+    - screen2Platform: null
+    - individualStationDepartureTime: false
+    - showDepartureNumbers: false
+    - firstDepartureBold: true
     - targetFPS: 70
     - fpsTime: 10
-    - debug: False
-version: 0.6.2
-
+    - debug: false
+version: 0.7.0
