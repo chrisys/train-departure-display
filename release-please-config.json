@@ -1,0 +1,10 @@
+{
+    "packages": {
+        ".": {
+            "release-type": "simple",
+                "extra-files": [
+                    { "type": "yaml", "path": "balena.yml", "jsonpath": "$.version"  }
+            ]
+        }
+    }
+}
