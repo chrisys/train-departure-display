@@ -75,13 +75,18 @@ data:
     - raspberry-pi
     - raspberrypi0-2w-64
     - raspberrypi3
+    - raspberrypi4-64
   applicationEnvironmentVariables:
     - TZ: Europe/London
-    - departureStation: PAD
-    - outOfHoursName: London Paddington
+    - mode: tube
+    - departureStation: 940GZZLUCTN
+    - outOfHoursName: Camden Town
     - numericPlatformsOnly: false
     - refreshTime: 120
     - apiKey: UPDATE_ME
+    - tflAppKey: null
+    - tubeLine: Northern
+    - tubeDirection: southbound
     - operatingHours: 8-22
     - screenBlankHours: 1-6
     - screenRotation: 2
@@ -96,4 +101,4 @@ data:
     - targetFPS: 70
     - fpsTime: 10
     - debug: false
-version: 0.7.0
+version: 0.8.0

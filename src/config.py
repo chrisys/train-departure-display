@@ -40,6 +40,9 @@ def loadConfig():
         data["firstDepartureBold"] = False
     data["hoursPattern"] = re.compile("^((2[0-3]|[0-1]?[0-9])-(2[0-3]|[0-1]?[0-9]))$")
 
+    # data source mode: "nationalrail" (default) or "tube" (TfL Underground/DLR live arrivals)
+    data["mode"] = (os.getenv("mode") or "nationalrail").strip().lower()
+
     data["journey"]["departureStation"] = os.getenv("departureStation") or "PAD"
 
     data["journey"]["destinationStation"] = os.getenv("destinationStation") or ""
@@ -58,8 +61,17 @@ def loadConfig():
     data["journey"]["screen1Platform"] = parsePlatformData(os.getenv("screen1Platform"))
     data["journey"]["screen2Platform"] = parsePlatformData(os.getenv("screen2Platform"))
     data["journey"]["numericPlatformsOnly"] = os.getenv("numericPlatformsOnly", "False").lower() == "true"
-    
+
+    # optional: restrict tube mode to a single line (e.g. "Victoria"), as a stop can serve several
+    data["journey"]["tubeLine"] = os.getenv("tubeLine") or ""
+
+    # optional: restrict tube mode to one direction. Accepts the TfL direction
+    # ("inbound"/"outbound") or a compass word ("westbound"/"eastbound"/etc.)
+    data["journey"]["tubeDirection"] = os.getenv("tubeDirection") or ""
+
     data["api"]["apiKey"] = os.getenv("apiKey") or None
+    # optional TfL application key (raises rate limits in tube mode; not required)
+    data["api"]["tflAppKey"] = os.getenv("tflAppKey") or None
     data["api"]["operatingHours"] = os.getenv("operatingHours") or ""
 
     data["showDepartureNumbers"] = False

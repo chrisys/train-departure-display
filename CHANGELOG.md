@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.0](https://github.com/chrisys/train-departure-display/compare/v0.7.0...v0.8.0)
+
+
+### Features
+
+* add live London Underground/DLR departures via the TfL Unified API, selectable with the `mode` environment variable. Tube mode renders an Underground-style next-train board (arrival order, destination and a live `mins` countdown such as `2 mins`/`Due`) with a scrolling status line showing the full platform name and live train location, and shows a "Powered by Transport for London" startup screen. Configurable with `departureStation` (TfL StopPoint id), `tubeLine` and `tubeDirection`; no API key is required
+
 ## [0.7.0](https://github.com/chrisys/train-departure-display/compare/v0.6.3...v0.7.0) (2026-04-21)
 
 

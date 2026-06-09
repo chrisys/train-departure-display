@@ -33,7 +33,7 @@ This project is designed to run using a Raspberry Pi Zero W or Zero 2 W and ther
 
 - Software to flash an SD card ([balenaEtcher](https://balena.io/etcher))
 - A free [balenaCloud](https://balena.io/cloud) account
-- A free [National Rail Enquiries OpenLDBWS API](http://realtime.nationalrail.co.uk/OpenLDBWSRegistration) account
+- A free [National Rail Enquiries OpenLDBWS API](http://realtime.nationalrail.co.uk/OpenLDBWSRegistration) account (only needed for National Rail departures; not required if you only want London Underground / DLR arrivals)
 - (optional) A download of this project
 - (optional) The [balena CLI tools](https://github.com/balena-io/balena-cli/blob/master/INSTALL.md)
 

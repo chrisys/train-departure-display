@@ -7,6 +7,7 @@ from datetime import datetime
 from PIL import ImageFont, Image, ImageDraw
 
 from trains import loadDeparturesForStation
+from tube import loadTubeDeparturesForStation
 from config import loadConfig
 from open import isRun
 
@@ -76,6 +77,23 @@ def renderPlatform(departure):
                 platform = "BUS"
             _, _, bitmap = cachedBitmapText(platform, font)
             draw.bitmap((0, 0), bitmap, fill="yellow")
+    return drawText
+
+
+def renderTubeDestination(departure, font, order):
+    def drawText(draw, *_):
+        destinationName = departure["destination_name"]
+        text = f"{order}  {destinationName}"
+        _, _, bitmap = cachedBitmapText(text, font)
+        draw.bitmap((0, 0), bitmap, fill="yellow")
+    return drawText
+
+
+def renderTubeMins(departure):
+    def drawText(draw, width, *_):
+        text = departure.get("mins_display", "")
+        w, _, bitmap = cachedBitmapText(text, font)
+        draw.bitmap((width - w, 0), bitmap, fill="yellow")
     return drawText
 
 
@@ -152,7 +170,7 @@ def renderStations(stations, screen_id='default'):
         else:
             # slide the bitmap up from the bottom of its viewport until it's fully in view
             draw.bitmap((0, txt_height - state.pixelsUp), bitmap, fill="yellow")
-            if state.pixelsUp == txt_height:
+            if state.pixelsUp >= txt_height:
                 state.pauseCount += 1
                 if state.pauseCount > 20:
                     state.hasElevated = 1
@@ -221,6 +239,14 @@ def renderNRE(xOffset):
     return drawText
 
 
+def renderTfL(xOffset):
+    def drawText(draw, *_):
+        text = "Transport for London"
+        draw.text((int(xOffset), 0), text=text, font=fontBold, fill="yellow")
+
+    return drawText
+
+
 def renderName(xOffset):
     def drawText(draw, *_):
         text = "UK Train Departure Display"
@@ -261,8 +287,12 @@ def loadData(apiConfig, journeyConfig, config):
     rows = "10"
 
     try:
-        departures, stationName = loadDeparturesForStation(
-            journeyConfig, apiConfig["apiKey"], rows)
+        if config["mode"] == "tube":
+            departures, stationName = loadTubeDeparturesForStation(
+                journeyConfig, apiConfig["tflAppKey"], rows)
+        else:
+            departures, stationName = loadDeparturesForStation(
+                journeyConfig, apiConfig["apiKey"], rows)
 
         if departures is None:
             return False, False, stationName
@@ -270,7 +300,8 @@ def loadData(apiConfig, journeyConfig, config):
         firstDepartureDestinations = departures[0]["calling_at_list"]
         return departures, firstDepartureDestinations, stationName
     except requests.RequestException as err:
-        print("Error: Failed to fetch data from OpenLDBWS")
+        source = "TfL" if config["mode"] == "tube" else "OpenLDBWS"
+        print("Error: Failed to fetch data from " + source)
         print(err.__context__)
         return False, False, journeyConfig['outOfHoursName']
 
@@ -282,12 +313,18 @@ def drawStartup(device, width, height):
         nameSize = int(fontBold.getlength("UK Train Departure Display"))
         versionSize = int(font.getlength("v" + getVersionNumber().strip() + " " + getVersionDate()))
         poweredSize = int(fontBold.getlength("Powered by"))
-        NRESize = int(fontBold.getlength("National Rail Enquiries"))
+
+        if config["mode"] == "tube":
+            providerSize = int(fontBold.getlength("Transport for London"))
+            renderProvider = renderTfL
+        else:
+            providerSize = int(fontBold.getlength("National Rail Enquiries"))
+            renderProvider = renderNRE
 
         rowOne = snapshot(width, 10, renderName((width - nameSize) / 2), interval=10)
         rowTwo = snapshot(width, 10, renderVersion((width - versionSize) / 2), interval=10)
         rowThree = snapshot(width, 10, renderPoweredBy((width - poweredSize) / 2), interval=10)
-        rowFour = snapshot(width, 10, renderNRE((width - NRESize) / 2), interval=10)
+        rowFour = snapshot(width, 10, renderProvider((width - providerSize) / 2), interval=10)
 
         if len(virtualViewport._hotspots) > 0:
             for hotspot, xy in virtualViewport._hotspots:
@@ -475,6 +512,66 @@ def drawSignage(device, width, height, data, screen_id='default'):
 
     return virtualViewport
 
+def drawSignageTube(device, width, height, data, screen_id='default'):
+    """London Underground / DLR style board: arrival order + destination on the
+    left and a 'mins' countdown on the right. The first departure has a scrolling
+    status line beneath it showing its platform and live location (mirroring the
+    National Rail 'calling at' scroller), followed by two more departures and the clock."""
+    virtualViewport = viewport(device, width=width, height=height)
+
+    departures, _, departureStation = data
+
+    width = virtualViewport.width
+
+    if len(departures) == 0:
+        noTrains = drawBlankSignage(device, width=width, height=height, departureStation=departureStation)
+        return noTrains
+
+    # reserve space on the right for the longest expected countdown
+    minsWidth = int(font.getlength("10 mins"))
+    gap = 5
+    destWidth = width - minsWidth - gap
+
+    firstFont = font
+    if config['firstDepartureBold']:
+        firstFont = fontBold
+
+    # build the scrolling status line for the first departure
+    first = departures[0]
+    statusParts = [p for p in [first.get("platform_name", ""), first.get("current_location", "")] if p]
+    statusLine = "  --  ".join(statusParts)
+
+    hotspots = []
+
+    # row 1: first departure
+    hotspots.append((snapshot(destWidth, 10, renderTubeDestination(first, firstFont, 1), interval=config["refreshTime"]), (0, 0)))
+    hotspots.append((snapshot(minsWidth, 10, renderTubeMins(first), interval=config["refreshTime"]), (width - minsWidth, 0)))
+
+    # row 2: scrolling platform + live location for the first departure
+    hotspots.append((snapshot(width, 10, renderStations(statusLine, screen_id), interval=0.02), (0, 12)))
+
+    # rows 3 & 4: the next two departures
+    nextYPositions = [24, 36]
+    for idx, y in enumerate(nextYPositions):
+        depIndex = idx + 1
+        if depIndex >= len(departures):
+            break
+        dep = departures[depIndex]
+        hotspots.append((snapshot(destWidth, 10, renderTubeDestination(dep, font, depIndex + 1), interval=config["refreshTime"]), (0, y)))
+        hotspots.append((snapshot(minsWidth, 10, renderTubeMins(dep), interval=config["refreshTime"]), (width - minsWidth, y)))
+
+    rowTime = snapshot(width, 14, renderTime, interval=0.1)
+
+    if len(virtualViewport._hotspots) > 0:
+        for vhotspot, xy in virtualViewport._hotspots:
+            virtualViewport.remove_hotspot(vhotspot, xy)
+
+    for hotspot, pos in hotspots:
+        virtualViewport.add_hotspot(hotspot, pos)
+    virtualViewport.add_hotspot(rowTime, (0, 50))
+
+    return virtualViewport
+
 def getIp():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.settimeout(1)
@@ -582,11 +679,17 @@ try:
                             nextStations = data[1]
                             station = data[2]
                             screenData = platform_filter(departureData, config["journey"]["screen1Platform"], station, config["journey"]["numericPlatformsOnly"])
-                            virtual = drawSignage(device, width=widgetWidth, height=widgetHeight, data=screenData, screen_id='screen1')
+                            if config["mode"] == "tube":
+                                virtual = drawSignageTube(device, width=widgetWidth, height=widgetHeight, data=screenData, screen_id='screen1')
+                            else:
+                                virtual = drawSignage(device, width=widgetWidth, height=widgetHeight, data=screenData, screen_id='screen1')
 
                             if config['dualScreen']:
                                 screen1Data = platform_filter(departureData, config["journey"]["screen2Platform"], station, config["journey"]["numericPlatformsOnly"])
-                                virtual1 = drawSignage(device1, width=widgetWidth, height=widgetHeight, data=screen1Data, screen_id='screen2')
+                                if config["mode"] == "tube":
+                                    virtual1 = drawSignageTube(device1, width=widgetWidth, height=widgetHeight, data=screen1Data, screen_id='screen2')
+                                else:
+                                    virtual1 = drawSignage(device1, width=widgetWidth, height=widgetHeight, data=screen1Data, screen_id='screen2')
 
                     timeAtStart = time.time()
 

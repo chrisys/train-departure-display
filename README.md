@@ -1,10 +1,11 @@
 ![](assets/full-logo.png)
 
-**A replica, near real-time, miniature UK railway station train departure sign based upon a Raspberry Pi Zero and 256x64 SPI OLED display(s). Uses the publicly available [OpenLDBWS API by National Rail Enquiries](https://www.nationalrail.co.uk/).**
+**A replica, near real-time, miniature UK railway station train departure sign based upon a Raspberry Pi Zero and 256x64 SPI OLED display(s). Uses the publicly available [OpenLDBWS API by National Rail Enquiries](https://www.nationalrail.co.uk/) and the [TfL Unified API](https://api.tfl.gov.uk/) for London Underground / DLR arrivals.**
 
 ## Highlights
 
 - **See local departures**: Display the depatures from your local station at home for up to date train information.
+- **London Underground & DLR**: Switch to `tube` mode to show live TfL arrivals — no API key required.
 - **3D-printable cases**: Print your own miniature case to keep everything tidy - both desktop and 'hanging' style available.
 - **Dual display support**: Run two displays each showing departures from different platforms from a single Raspberry Pi.
 
