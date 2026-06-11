@@ -528,7 +528,8 @@ def drawSignageTube(device, width, height, data, screen_id='default'):
         return noTrains
 
     # reserve space on the right for the longest expected countdown
-    minsWidth = int(font.getlength("10 mins"))
+    # (TfL predictions can run 20-30 minutes out, so measure a wide two-digit value)
+    minsWidth = int(font.getlength("88 mins"))
     gap = 5
     destWidth = width - minsWidth - gap
 
