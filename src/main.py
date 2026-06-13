@@ -280,7 +280,7 @@ def loadData(apiConfig, journeyConfig, config):
         runHours = [int(x) for x in apiConfig['operatingHours'].split('-')]
 
     if len(runHours) == 2 and isRun(runHours[0], runHours[1]) is False:
-        return False, False, journeyConfig['outOfHoursName']
+        return False, False, journeyConfig['outOfHoursName'], ""
 
     # set rows to 10 (max allowed) to get as many departure as poss
     # leaving as a variable so this can be updated if the API does
@@ -288,22 +288,23 @@ def loadData(apiConfig, journeyConfig, config):
 
     try:
         if config["mode"] == "tube":
-            departures, stationName = loadTubeDeparturesForStation(
+            departures, stationName, disruptionMessage = loadTubeDeparturesForStation(
                 journeyConfig, apiConfig["tflAppKey"], rows)
         else:
+            disruptionMessage = ""
             departures, stationName = loadDeparturesForStation(
                 journeyConfig, apiConfig["apiKey"], rows)
 
         if departures is None:
-            return False, False, stationName
+            return False, False, stationName, disruptionMessage
 
         firstDepartureDestinations = departures[0]["calling_at_list"]
-        return departures, firstDepartureDestinations, stationName
+        return departures, firstDepartureDestinations, stationName, disruptionMessage
     except requests.RequestException as err:
         source = "TfL" if config["mode"] == "tube" else "OpenLDBWS"
         print("Error: Failed to fetch data from " + source)
         print(err.__context__)
-        return False, False, journeyConfig['outOfHoursName']
+        return False, False, journeyConfig['outOfHoursName'], ""
 
 
 def drawStartup(device, width, height):
@@ -390,7 +391,7 @@ def drawDebugScreen(device, width, height, screen="1", showTime=False):
 
 
 
-def drawBlankSignage(device, width, height, departureStation):
+def drawBlankSignage(device, width, height, departureStation, serviceMessage=""):
     welcomeSize = int(fontBold.getlength("Welcome to"))
     stationSize = int(fontBold.getlength(departureStation))
 
@@ -402,7 +403,17 @@ def drawBlankSignage(device, width, height, departureStation):
         (width - welcomeSize) / 2), interval=config["refreshTime"])
     rowTwo = snapshot(width, 10, renderDepartureStation(
         departureStation, (width - stationSize) / 2), interval=config["refreshTime"])
-    rowThree = snapshot(width, 10, renderDots, interval=config["refreshTime"])
+
+    if serviceMessage:
+        rowThree = snapshot(
+            width,
+            10,
+            renderStations("Service update: " + serviceMessage, "blank-status"),
+            interval=0.02,
+        )
+    else:
+        rowThree = snapshot(width, 10, renderDots, interval=config["refreshTime"])
+
     # this will skip a second sometimes if set to 1, but a hotspot burns CPU
     # so set to snapshot of 0.1; you won't notice
     rowTime = snapshot(width, 14, renderTime, interval=0.1)
@@ -649,6 +660,13 @@ try:
     if config['hoursPattern'].match(config['screenBlankHours']):
         blankHours = [int(x) for x in config['screenBlankHours'].split('-')]
 
+    # Cache variables to avoid recreating viewports unnecessarily
+    virtual = None
+    virtual1 = None
+    last_data = None
+    last_data1 = None
+    last_blank_state = None
+
     while True:
         with regulator:
             if len(blankHours) == 2 and isRun(blankHours[0], blankHours[1]):
@@ -669,34 +687,47 @@ try:
                             virtual1 = drawDebugScreen(device1, width=widgetWidth, height=widgetHeight, showTime=True, screen="2")
                     else:
                         data = loadData(config["api"], config["journey"], config)
-                        if data[0] is False:
-                            virtual = drawBlankSignage(
-                                device, width=widgetWidth, height=widgetHeight, departureStation=data[2])
-                            if config['dualScreen']:
-                                virtual1 = drawBlankSignage(
-                                    device1, width=widgetWidth, height=widgetHeight, departureStation=data[2])
-                        else:
-                            departureData = data[0]
-                            nextStations = data[1]
-                            station = data[2]
-                            screenData = platform_filter(departureData, config["journey"]["screen1Platform"], station, config["journey"]["numericPlatformsOnly"])
-                            if config["mode"] == "tube":
-                                virtual = drawSignageTube(device, width=widgetWidth, height=widgetHeight, data=screenData, screen_id='screen1')
+                        # Only recreate viewport if data has changed
+                        if data != last_data:
+                            last_data = data
+                            if data[0] is False:
+                                virtual = drawBlankSignage(
+                                    device, width=widgetWidth, height=widgetHeight, departureStation=data[2], serviceMessage=data[3])
                             else:
-                                virtual = drawSignage(device, width=widgetWidth, height=widgetHeight, data=screenData, screen_id='screen1')
-
-                            if config['dualScreen']:
-                                screen1Data = platform_filter(departureData, config["journey"]["screen2Platform"], station, config["journey"]["numericPlatformsOnly"])
+                                departureData = data[0]
+                                nextStations = data[1]
+                                station = data[2]
+                                screenData = platform_filter(departureData, config["journey"]["screen1Platform"], station, config["journey"]["numericPlatformsOnly"])
                                 if config["mode"] == "tube":
-                                    virtual1 = drawSignageTube(device1, width=widgetWidth, height=widgetHeight, data=screen1Data, screen_id='screen2')
+                                    virtual = drawSignageTube(device, width=widgetWidth, height=widgetHeight, data=screenData, screen_id='screen1')
                                 else:
-                                    virtual1 = drawSignage(device1, width=widgetWidth, height=widgetHeight, data=screen1Data, screen_id='screen2')
+                                    virtual = drawSignage(device, width=widgetWidth, height=widgetHeight, data=screenData, screen_id='screen1')
+
+                        if config['dualScreen']:
+                            if data[0] is False:
+                                data1 = (data[0], data[1], data[2], data[3])
+                            else:
+                                departureData = data[0]
+                                station = data[2]
+                                data1 = platform_filter(departureData, config["journey"]["screen2Platform"], station, config["journey"]["numericPlatformsOnly"])
+                            
+                            if data1 != last_data1:
+                                last_data1 = data1
+                                if data[0] is False:
+                                    virtual1 = drawBlankSignage(
+                                        device1, width=widgetWidth, height=widgetHeight, departureStation=data[2], serviceMessage=data[3])
+                                else:
+                                    if config["mode"] == "tube":
+                                        virtual1 = drawSignageTube(device1, width=widgetWidth, height=widgetHeight, data=data1, screen_id='screen2')
+                                    else:
+                                        virtual1 = drawSignage(device1, width=widgetWidth, height=widgetHeight, data=data1, screen_id='screen2')
 
                     timeAtStart = time.time()
 
                 timeNow = time.time()
-                virtual.refresh()
-                if config['dualScreen']:
+                if virtual is not None:
+                    virtual.refresh()
+                if config['dualScreen'] and virtual1 is not None:
                     virtual1.refresh()
 
 except KeyboardInterrupt:

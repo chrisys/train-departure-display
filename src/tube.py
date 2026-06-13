@@ -6,6 +6,74 @@ import requests
 TFL_BASE_URL = "https://api.tfl.gov.uk"
 
 
+def normalizeLineId(lineName):
+    """Best-effort mapping from a display line name to TfL line id"""
+    if not lineName:
+        return ""
+    cleaned = lineName.strip().lower()
+    if cleaned.endswith(" line"):
+        cleaned = cleaned[:-5].strip()
+    return cleaned.replace(" ", "-")
+
+
+def extractLineIds(journeyConfig, arrivals):
+    """Choose relevant line ids for disruption lookups"""
+    lineFilter = (journeyConfig.get("tubeLine") or "").strip().lower()
+    lineIds = []
+
+    for arrival in arrivals:
+        lineName = (arrival.get("lineName") or "").strip().lower()
+        if lineFilter and lineName != lineFilter:
+            continue
+        lineId = (arrival.get("lineId") or "").strip().lower()
+        if lineId and lineId not in lineIds:
+            lineIds.append(lineId)
+
+    if not lineIds and lineFilter:
+        fallback = normalizeLineId(lineFilter)
+        if fallback:
+            lineIds.append(fallback)
+
+    return lineIds
+
+
+def fetchTubeDisruptionMessage(journeyConfig, arrivals, appKey):
+    """Fetch the first non-good-service status reason for the configured/active lines"""
+    lineIds = extractLineIds(journeyConfig, arrivals)
+    if not lineIds:
+        return ""
+
+    params = {}
+    if appKey:
+        params["app_key"] = appKey
+
+    try:
+        response = requests.get(
+            TFL_BASE_URL + "/Line/" + ",".join(lineIds) + "/Status",
+            params=params,
+            timeout=10,
+        )
+        response.raise_for_status()
+        lines = response.json()
+    except (requests.RequestException, ValueError):
+        return ""
+
+    for line in lines:
+        lineName = (line.get("name") or "").strip()
+        for status in line.get("lineStatuses") or []:
+            severity = (status.get("statusSeverityDescription") or "").strip()
+            if severity.lower() == "good service":
+                continue
+            reason = (status.get("reason") or "").strip()
+            if reason:
+                # Keep this compact enough to remain readable on the OLED scroller.
+                return reason[:220]
+            if lineName and severity:
+                return (lineName + ": " + severity)[:220]
+
+    return ""
+
+
 def removeBrackets(originalName):
     return re.split(r" \(", originalName)[0]
 
@@ -167,17 +235,19 @@ def loadTubeDeparturesForStation(journeyConfig, appKey, rows):
     response.raise_for_status()
     arrivals = response.json()
 
+    disruptionMessage = fetchTubeDisruptionMessage(journeyConfig, arrivals, appKey)
+
     Departures, departureStationName = ProcessTubeArrivals(journeyConfig, arrivals)
 
     if not departureStationName:
         departureStationName = fetchStationName(stopPointId, appKey) or journeyConfig.get("outOfHoursName") or ""
 
     if Departures is None:
-        return None, departureStationName
+        return None, departureStationName, disruptionMessage
 
     try:
         maxRows = int(rows)
     except (TypeError, ValueError):
         maxRows = len(Departures)
 
-    return Departures[:maxRows], departureStationName
+    return Departures[:maxRows], departureStationName, disruptionMessage
