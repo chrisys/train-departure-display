@@ -151,7 +151,24 @@ def ProcessTubeArrivals(journeyConfig, arrivals):
         def matchesDirection(arrival):
             direction = (arrival.get("direction") or "").lower()
             platformName = (arrival.get("platformName") or "").lower()
-            return directionFilter == direction or directionFilter in platformName
+            filter_lower = directionFilter.lower()
+            
+            # Direct matches first
+            if filter_lower in platformName or filter_lower == direction:
+                return True
+            
+            # Map compass directions to TfL's inbound/outbound API values
+            if filter_lower in ["westbound", "west"]:
+                return direction == "inbound"
+            elif filter_lower in ["eastbound", "east"]:
+                return direction == "outbound"
+            elif filter_lower in ["northbound", "north"]:
+                return direction == "outbound"
+            elif filter_lower in ["southbound", "south"]:
+                return direction == "inbound"
+            
+            return False
+            
         arrivals = [a for a in arrivals if matchesDirection(a)]
 
     if not arrivals:
